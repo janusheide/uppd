@@ -1,0 +1,120 @@
+[build-system]
+requires = ["setuptools>=74", "wheel"]
+build-backend = "setuptools.build_meta"
+
+# The version number will be 0.0.0, as of 16/01-24 using setuptools_scm result
+# in all files under git control being included in the wheel (unless excluded
+# in Manifest.in) maybe this will change or one of the other build backends
+# will support dynamic version from git.
+[project]
+name = "uppd"
+authors = [
+    {name= 'Janus Heide', email = "janusheide@gmail.com"}
+]
+description = "Tool for managing machine learning model and service projects and other fast paced python projects."
+dynamic = ["version"]
+readme = "README.rst"
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Topic :: Software Development :: Build Tools",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+]
+
+keywords=["building", "maintenance", "utility"]
+
+dependencies = [
+    "tomlkit",
+    "aiohttp>2,<4",
+    "packaging",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest==8.3.3",
+    "pytest-aiohttp==1.0.5",
+    "pytest-asyncio==0.24.0",
+    "pytest-cov==5.0.0",
+]
+dev = [
+    "uppd[test]",
+    "bouillon==1.4.0",
+    "build==1.2.2",
+    "isort==5.13.2",
+    "liccheck==0.9.2",
+    "mypy==1.11.2",
+    "ruff==0.6.4",
+    "semver==3.0.2",
+    "setuptools-scm==8.1.0",
+    "types-setuptools==74.1.0.20240907",
+    "twine==5.1.1",
+    "wheel>=0.40.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/janusheide/uppd"
+Repository = "https://github.com/janusheide/uppd"
+
+[project.scripts]
+uppd = "uppd.uppd:main_cli"
+
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.isort]
+multi_line_output = 5
+include_trailing_comma = "True"
+
+[tool.liccheck]
+authorized_licenses = [
+    "apache",
+    "apache software",
+    "apache software license",
+    "apache 2.0",
+    "apache license 2.0",
+    "bsd",
+    "bsd license",
+    "BSD-3-Clause",
+    "new bsd",
+    "new bsd license",
+    "simplified bsd",
+    "gnu lgpl",
+    "lgpl",
+    "ISC",
+    "mit",
+    "mit license",
+    "Mozilla Public License 2.0 (MPL 2.0)",
+    "python software foundation",
+    "psf",
+]
+unauthorized_licenses = [
+    "gpl",
+    "gpl v3",
+]
+dependencies = true # load [project.dependencies]
+optional_dependencies = ["test", "dev"] # load extras from [project.optional-dependencies]
+
+[tool.liccheck.authorized_packages]
+PrintDebug = "*"
+filelock = "*"
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+
+[tool.ruff.lint]
+# select = ["ALL"]
+# as of 01/2024 ruff does not support isort configuration, so we disable I001
+# ignore = ["ANN101", "I001", "D107", "D203", "D213", "FIX", "INP", "G004", "PLR", "TD002", "TD003", "TCH001", "TCH002"]
+
+[tool.ruff.lint.per-file-ignores]
+"test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]
+
