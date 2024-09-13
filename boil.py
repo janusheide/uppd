@@ -47,6 +47,7 @@ def setup(*, dry_run: bool, **kwargs) -> None:
 def lint(
     isort: bool = True,
     liccheck: bool = True,
+    mypy: bool = True,
     ruff: bool = True,
     **kwargs
 ) -> None:
@@ -57,20 +58,20 @@ def lint(
     if liccheck:
         bouillon.run(["liccheck"], **kwargs)
 
+    if mypy:
+        bouillon.run(['mypy', 'src'], **kwargs)
+
     if ruff:
         bouillon.run(['ruff', 'check'], **kwargs)
 
 
 def test(
     *,
-    mypy: bool = True,
     test_files: bool = True,
     unit_tests: bool = True,
     **kwargs
 ) -> None:
     """Run tests."""
-    if mypy:
-        bouillon.run(['mypy', 'src'], **kwargs)
 
     # if test_files:
     #     if not bouillon.check_for_test_files(
@@ -200,15 +201,14 @@ def cli() -> Namespace:
         '--no-liccheck', dest='liccheck', action='store_false',
         help='Do not check that licenses of all used modules.')
     parser_lint.add_argument(
+        '--no-mypy-check', dest='mypy', action='store_false',
+        help='Do not perform mypy code analysis.')
+    parser_lint.add_argument(
         '--no-ruff', dest='ruff', action='store_false',
         help='Do not check with ruff.')
 
     parser_test = subparsers.add_parser('test', help='Run tests')
     parser_test.set_defaults(function=test)
-
-    parser_test.add_argument(
-        '--no-mypy-check', dest='mypy', action='store_false',
-        help='Do not perform mypy code analysis.')
     parser_test.add_argument(
         '--no-test-files-check', dest='test_files', action='store_false',
         help='Do not check that for each source file there is a test file.')

@@ -12,24 +12,22 @@ from pathlib import Path
 
 from aiohttp import ClientSession
 from packaging import version
+from packaging.requirements import Requirement, SpecifierSet
+from packaging.specifiers import Specifier
+from packaging.version import Version
 from tomlkit import dump, load
 
 logger = getLogger(__name__)
 
-def candidate(d: str) -> bool:
 
-    if "===" in d:
-        return False
-
-    return "==" in d
+def _find_in(sub_strings: list[str], string: str) -> str | None:
+    """Return the first found sub_string in string."""
+    return next((s for s in sub_strings if s in string), None)
 
 
-async def get_package_info(
-    session: ClientSession,
-    package: str) -> dict:
+async def get_package_info(package: str, session: ClientSession) -> dict:
     """Check if dependency is candidate for update."""
     url = f"/pypi/{package}/json"
-
     async with session.get(url) as response:
         return await response.json()
 
@@ -40,13 +38,10 @@ def find_latest_version(
     # use_postreleases: bool = False,
     # use_prereleases: bool = False,
 ) -> str | None:
-
     # TODO allow to check that python_requires is not higher than the runtime
-
 
     releases = list(package["releases"].keys())
     releases.sort(key=version.Version, reverse=True)
-
     for r in releases:
         if package["releases"][r][0]["yanked"]:
             continue
@@ -54,33 +49,52 @@ def find_latest_version(
         v = version.parse(r)
         if v.is_prerelease:
             continue
-
-        if  v.is_postrelease:
+        if v.is_postrelease:
             continue
-
-        if  v.is_devrelease:
+        if v.is_devrelease:
             continue
 
         return r
 
     return None
 
-async def bump_dependencies(session: ClientSession, dep: dict) -> None:
 
-    for e, d in enumerate(dep):
-        if not candidate(d):
-            continue
+def set_version(*, specifier: Specifier, version: Version, match_operators: list[str]) -> Specifier:
+    if _find_in(match_operators, specifier.operator):
+        return Specifier(f"{specifier.operator}{version}")
 
-        s = d.split("==")
-        newest = find_latest_version(
-            await get_package_info(session, s[0].split("[")[0]))
+    return specifier
 
-        if newest is None or newest == s[-1]:
-            logger.debug(f"{d} -> {newest}")
-            continue
 
-        logger.info(f"{d} -> {newest}")
-        dep[e] = f"{s[0]}=={newest}"
+def set_versions(*, specifier: SpecifierSet, **kwargs) -> SpecifierSet:
+    # TODO nicer ?
+    return SpecifierSet(",".join([str(set_version(specifier=s, **kwargs)) for s in specifier]))
+
+
+async def upgrade_requirement(
+    requirement: str,
+    *,
+    session: ClientSession,
+    match_operators: list[str]
+) -> str:
+    r = Requirement(requirement)
+
+    if not r.specifier or not _find_in(match_operators, str(r.specifier)):
+        logger.debug(f"skipping {r} does not match operators.")
+        return str(r)
+
+    updated = set_versions(
+        specifier=r.specifier,
+        version=find_latest_version(await get_package_info(r.name, session)),
+        match_operators=match_operators
+    )
+
+    if r.specifier != updated:
+        logger.info(f"{r} -> {r.name}{updated}")
+        r.specifier = updated
+
+    return str(r)
+
 
 def parse_arguments() -> Namespace:
     """Parse arguments."""
@@ -91,6 +105,11 @@ def parse_arguments() -> Namespace:
     parser.add_argument(
         "-p", "--project-file", nargs="*", default=["pyproject.toml"],
         help="Path to pyproject file(s)")
+
+    parser.add_argument(
+        "-m", "--match_operators", nargs="*", default=["==", "<=", "~≃"],
+        choices=["<", "<=", "==", ">=", ">", "~="],
+        help="operators to upgrade.")
 
     parser.add_argument(
         "--dry-run", action="store_true",
@@ -119,10 +138,7 @@ async def main(args: Namespace):
     else:
         basicConfig(stream=sys.stdout, level=getLevelName(args.log_level))
 
-    logger.debug(args)
-
     #TODO allow to upgrade to betas / preleases
-
 
     for pf in args.project_file:
 
@@ -134,24 +150,25 @@ async def main(args: Namespace):
             logger.error(f"No such file '{pf}' - skipping.")
             continue
 
-        # TODO split based on "==" and check if package if true
+        project = data.get("project")
+        if project is None:
+            return
 
+        logger.debug(args.index_url)
         try:
             async with ClientSession(args.index_url) as session:
-
-                project = data.get("project")
-
-                if project is None:
-                    return
-
                 if dep := project.get("dependencies"):
                     logger.info("[project.dependencies]:")
-                    await bump_dependencies(session, dep)
+                    for e, d in enumerate(dep):
+                        dep[e] = await upgrade_requirement(
+                            d, session=session, match_operators=args.match_operators)
 
                 if optional_dep := project.get("optional-dependencies"):
                     for k, dep in optional_dep.items():
                         logger.info(f"[project.optional-dependencies.{k}]:")
-                        await bump_dependencies(session, dep)
+                        for e, d in enumerate(dep):
+                            dep[e] = await upgrade_requirement(
+                                d, session=session, match_operators=args.match_operators)
 
         except ValueError:
             logger.critical("Invalid index-url.")
@@ -165,7 +182,6 @@ async def main(args: Namespace):
 def main_cli():
     args = parse_arguments()
     asyncio.run(main(args))
-
 
 
 if __name__ == "__main__":
