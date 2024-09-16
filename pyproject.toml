@@ -52,7 +52,6 @@ dev = [
     "ruff==0.6.5",
     "semver==3.0.2",
     "setuptools-scm==8.1.0",
-    "types-setuptools==74.1.0.20240907",
     "twine==5.1.1",
     "wheel>=0.40.0",
 ]
@@ -118,4 +117,3 @@ exclude = ["boil.py",]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]
-

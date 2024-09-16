@@ -1,7 +1,13 @@
+# Copyright (c) 2020, Janus Heide.
+# All rights reserved.
+#
+# Distributed under the "BSD 3-Clause License", see LICENSE.txt.
+
 """Update Python Project Dependencies.
 
 Look through pyproject.toml and update dependencies and optional dependencies.
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -20,7 +26,6 @@ from packaging.version import Version
 from tomlkit import dump, load
 
 logger = getLogger(__name__)
-
 
 def _find_in(sub_strings: list[str], string: str) -> str | None:
     """Return the first found sub_string in string."""
@@ -87,7 +92,8 @@ async def upgrade_requirement(
 ) -> Requirement:
     """Upgrade requirement."""
     if not requirement.specifier or not _find_in(
-        match_operators, str(requirement.specifier)):
+        match_operators, str(requirement.specifier),
+    ):
         logger.debug(f"skipping {requirement} does not match {match_operators}.")
         return requirement
 
@@ -189,81 +195,78 @@ def parse_arguments() -> Namespace:
 
     parser.add_argument(
         "--log-file",
-        type=FileType("w"),
+        type=Path,
         help="Pipe loggining to file instead of stdout.")
 
     return parser.parse_args()
 
 
-async def main(args: Namespace) -> None:
+async def main(
+    *,
+    log_file: Path,
+    log_level: str,
+    infile: FileType,
+    outfile: list[Path],
+    index_url: str,
+    dry_run: bool,
+    **kwargs,
+) -> None:
     """Main."""
-    basicConfig(stream=args.log_file, level=getLevelName(args.log_level))
+    basicConfig(
+        filename=log_file,
+        level=getLevelName(log_level),
+        format = "%(levelname)s: %(message)s",
+    )
 
-    infiles = args.infile if isinstance(args.infile, list) else [args.infile]
-    if len(args.outfile) > len(infiles):
+    infiles = infile if isinstance(infile, list) else [infile]
+    if len(outfile) > len(infiles):
         logger.critical("More output files than input files.")
         exit(1)
 
+    for ifile, ofile in zip_longest(infiles, outfile):
 
-    for infile, outfile in zip_longest(infiles, args.outfile):
-
-        data = load(infile)
+        data = load(ifile)
         project = data.get("project")
         if project is None:
-            logger.critical(
-                f"Did not find project section in input file: {infile.name}")
+            logger.critical(f"No project section in input file: {ifile}")
             exit(1)
 
         try:
-            async with ClientSession(args.index_url) as session:
+            async with ClientSession(index_url) as session:
                 if dependencies := project.get("dependencies"):
                     logger.info("[project.dependencies]:")
                     await upgrade_requirements(
-                        dependencies,
-                        session=session,
-                        skip=args.skip,
-                        dev=args.dev,
-                        pre=args.pre,
-                        post=args.post,
-                        match_operators=args.match_operators,
+                        dependencies, session=session, **kwargs,
                     )
 
                 if optional_dep := project.get("optional-dependencies"):
                     for k, dependencies in optional_dep.items():
                         logger.info(f"[project.optional-dependencies.{k}]:")
                         await upgrade_requirements(
-                            dependencies,
-                            session=session,
-                            skip=args.skip,
-                            dev=args.dev,
-                            pre=args.pre,
-                            post=args.post,
-                            match_operators=args.match_operators,
+                            dependencies, session=session, **kwargs,
                         )
 
         except ValueError:
             logger.critical("Invalid index-url.")
             exit(1)
 
-        if args.dry_run:
+        if dry_run:
             continue
 
-        if outfile:
-            with Path(outfile).open("w") as out:
+        if ofile:
+            with Path(ofile).open("w") as out:
                 dump(data, out)
                 continue
 
-        with Path(infile.name).open("w") as out:
+        with Path(ifile.name).open("w") as out:
             dump(data, out)
 
 
 def main_cli() -> None:
     """Main."""
     args = parse_arguments()
-    asyncio.run(main(args))
+    asyncio.run(main(**vars(args)))
 
 
 if __name__ == "__main__":
-    args = parse_arguments()
-
-    asyncio.run(main(args))
+    main_cli()

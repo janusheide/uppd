@@ -5,7 +5,7 @@
 
 
 Update Python Project Dependencies (UPPD)
-========
+=========================================
 
 .. image:: https://github.com/janusheide/uppd/actions/workflows/unittests.yml/badge.svg
     :target: https://github.com/janusheide/uppd/actions/workflows/unittests.yml
@@ -17,9 +17,28 @@ Update dependencies and optional dependencies in pyproject.toml.
 Getting Started
 ---------------
 
-::
+Install and run::
+
     pip install uppd
     uppd --help
+
+
+Basic Usage
+-----------
+
+Set inputs and output files::
+
+    uppd -i pyproject.toml dev/pyproject.toml
+    uppd -i pyproject.toml dev/pyproject.toml -o pyproject.toml.updated
+
+Skip dependencies::
+
+    uppd --skip foo bar
+
+Allow pre releases to upgrade::
+
+    uppd --pre foo bar
+
 
 Logging
 -------
@@ -45,3 +64,14 @@ Set the log level to ``debug`` and redirect output from executed commands and
 log information to ``foo.log``::
 
     python boil --log-level=DEBUG --log-file=foo.log test >> foo.log
+
+
+Development
+-----------
+
+Install run tests and release::
+
+    python boil.py setup
+    python boil.py lint
+    python boil.py test
+    python boil.py release
