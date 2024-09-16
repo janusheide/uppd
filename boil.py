@@ -1,4 +1,3 @@
-#
 # Copyright (c) 2020, Janus Heide.
 # All rights reserved.
 #
@@ -8,7 +7,7 @@
 
 Run various commands, such as; test, build, release on your project. You should
 modify the steps that are relevant for your project, and the cli such that it
-reflects those steps. The cli specified here is used for the bouillon module.
+reflects those steps.
 """
 
 from __future__ import annotations

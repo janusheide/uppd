@@ -1,7 +1,6 @@
 """Update Python Project Dependencies.
 
-Look through pyproject.tomnl and update any dependencies and optional
-dependencies defined with '=='.
+Look through pyproject.toml and update dependencies and optional dependencies.
 """
 from __future__ import annotations
 
@@ -181,7 +180,7 @@ def parse_arguments() -> Namespace:
 
     parser.add_argument(
         "--index-url", default="https://pypi.org",
-        help="Base URL of the Python Package Index. Defaults to 'https://pypi.org'.")
+        help="Base URL of the Python Package Index.")
 
     parser.add_argument(
         "--log-level", default="INFO",
