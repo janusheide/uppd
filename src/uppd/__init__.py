@@ -1,6 +1,5 @@
 """Import uppd functions."""
 
-from __future__ import absolute_import
 
 from importlib.metadata import PackageNotFoundError, version
 
