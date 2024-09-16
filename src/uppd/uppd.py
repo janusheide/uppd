@@ -14,15 +14,15 @@ import asyncio
 from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
+from importlib.metadata import version
 from itertools import zip_longest
 from logging import basicConfig, getLevelName, getLogger
 from pathlib import Path
 
 from aiohttp import ClientSession
-from packaging import version
 from packaging.requirements import Requirement, SpecifierSet
 from packaging.specifiers import Specifier
-from packaging.version import Version
+from packaging.version import Version, parse
 from tomlkit import dump, load
 
 logger = getLogger(__name__)
@@ -47,10 +47,10 @@ def find_latest_version(
     """Find latets version of package."""
     versions = package["versions"]
 
-    versions.sort(key=version.Version, reverse=True)
+    versions.sort(key=Version, reverse=True)
     for ver in versions:
 
-        v = version.parse(ver)
+        v = parse(ver)
         if not dev and v.is_devrelease:
             continue
         if not pre and v.is_prerelease:
@@ -160,7 +160,7 @@ def parse_arguments() -> Namespace:
         )
 
     parser.add_argument(
-        "-m", "--match_operators", nargs="*", default=["==", "<=", r"~="],
+        "-m", "--match_operators", nargs="*", default=["==", "<=", "~="],
         choices=["<", "<=", "==", ">=", ">", "~="],
         help="operators to upgrade.")
 
@@ -197,6 +197,8 @@ def parse_arguments() -> Namespace:
         "--log-file",
         type=Path,
         help="Pipe loggining to file instead of stdout.")
+
+    parser.add_argument("-v", "--version", action="version", version=version("uppd"))
 
     return parser.parse_args()
 
