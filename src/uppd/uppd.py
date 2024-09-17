@@ -1,26 +1,31 @@
+# Copyright (c) 2020, Janus Heide.
+# All rights reserved.
+#
+# Distributed under the "BSD 3-Clause License", see LICENSE.txt.
+
 """Update Python Project Dependencies.
 
-Look through pyproject.tomnl and update any dependencies and optional
-dependencies defined with '=='.
+Look through pyproject.toml and update dependencies and optional dependencies.
 """
+
+from __future__ import annotations
 
 import asyncio
 from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
+from importlib.metadata import version
 from itertools import zip_longest
 from logging import basicConfig, getLevelName, getLogger
 from pathlib import Path
 
 from aiohttp import ClientSession
-from packaging import version
 from packaging.requirements import Requirement, SpecifierSet
 from packaging.specifiers import Specifier
-from packaging.version import Version
+from packaging.version import Version, parse
 from tomlkit import dump, load
 
 logger = getLogger(__name__)
-
 
 def _find_in(sub_strings: list[str], string: str) -> str | None:
     """Return the first found sub_string in string."""
@@ -39,12 +44,13 @@ async def get_package_info(package: str, session: ClientSession) -> dict:
 def find_latest_version(
     package: dict, *, dev: bool, pre: bool, post: bool,
 ) -> str | None:
+    """Find latets version of package."""
     versions = package["versions"]
 
-    versions.sort(key=version.Version, reverse=True)
+    versions.sort(key=Version, reverse=True)
     for ver in versions:
 
-        v = version.parse(ver)
+        v = parse(ver)
         if not dev and v.is_devrelease:
             continue
         if not pre and v.is_prerelease:
@@ -53,9 +59,8 @@ def find_latest_version(
             continue
 
         for file in reversed(package["files"]):
-            if ver in file:
-                if file["yanked"] is True:
-                    continue
+            if (ver in file) and file["yanked"]:
+                continue
 
             return ver
 
@@ -63,7 +68,7 @@ def find_latest_version(
 
 
 def set_version(
-    specifier: Specifier, *, version: Version, match_operators: list[str]
+    specifier: Specifier, *, version: Version, match_operators: list[str],
 ) -> Specifier:
     """Set specifier version if operator matchecs."""
     if _find_in(match_operators, specifier.operator):
@@ -74,7 +79,8 @@ def set_version(
 
 def set_versions(specifiers: SpecifierSet, **kwargs) -> SpecifierSet:
     """Set all versions for all specifiers that matches operatoers."""
-    return SpecifierSet(",".join([str(set_version(specifier=s, **kwargs)) for s in specifiers]))
+    return SpecifierSet(
+        ",".join([str(set_version(specifier=s, **kwargs)) for s in specifiers]))
 
 
 async def upgrade_requirement(
@@ -82,19 +88,21 @@ async def upgrade_requirement(
     *,
     session: ClientSession,
     match_operators: list[str],
-    **kwargs
+    **kwargs: bool,
 ) -> Requirement:
-
-    if not requirement.specifier or not _find_in(match_operators, str(requirement.specifier)):
-        logger.debug(f"skipping {requirement} does not match operators {match_operators}.")
+    """Upgrade requirement."""
+    if not requirement.specifier or not _find_in(
+        match_operators, str(requirement.specifier),
+    ):
+        logger.debug(f"skipping {requirement} does not match {match_operators}.")
         return requirement
 
     updated = set_versions(
         requirement.specifier,
         version=find_latest_version(
-            await get_package_info(requirement.name, session), **kwargs
+            await get_package_info(requirement.name, session), **kwargs,
             ),
-        match_operators=match_operators
+        match_operators=match_operators,
     )
 
     if requirement.specifier != updated:
@@ -111,8 +119,9 @@ async def upgrade_requirements(
     dev: list[str],
     pre: list[str],
     post: list[str],
-    **kwargs
+    **kwargs,
 ) -> list[str]:
+    """Upgrade requirements."""
     for e, d in enumerate(dependencies):
         requirement = Requirement(d)
         if requirement.name in skip:
@@ -123,7 +132,7 @@ async def upgrade_requirements(
             dev="*" in dev or requirement.name in dev,
             pre="*" in pre or requirement.name in pre,
             post="*" in post or requirement.name in post,
-            **kwargs
+            **kwargs,
         ))
 
     return dependencies
@@ -139,7 +148,7 @@ def parse_arguments() -> Namespace:
         "-i", "--infile",
         nargs="*",
         default="pyproject.toml",
-        type=FileType('r'),
+        type=FileType("r"),
         help="Path(s) to input file(s)")
 
     parser.add_argument(
@@ -147,11 +156,11 @@ def parse_arguments() -> Namespace:
         nargs="+",
         default=[],
         type=Path,
-        help="Path(s) to output file(s), if fewer files are specified than infile(s) the infile(s) files are overwritten.",
+        help="Path(s) to output file(s), defaults to overwritting inputs files.",
         )
 
     parser.add_argument(
-        "-m", "--match_operators", nargs="*", default=["==", "<=", r"~="],
+        "-m", "--match_operators", nargs="*", default=["==", "<=", "~="],
         choices=["<", "<=", "==", ">=", ">", "~="],
         help="operators to upgrade.")
 
@@ -177,7 +186,7 @@ def parse_arguments() -> Namespace:
 
     parser.add_argument(
         "--index-url", default="https://pypi.org",
-        help="Base URL of the Python Package Index. Defaults to 'https://pypi.org'.")
+        help="Base URL of the Python Package Index.")
 
     parser.add_argument(
         "--log-level", default="INFO",
@@ -186,80 +195,80 @@ def parse_arguments() -> Namespace:
 
     parser.add_argument(
         "--log-file",
-        type=FileType("w"),
+        type=Path,
         help="Pipe loggining to file instead of stdout.")
+
+    parser.add_argument("-v", "--version", action="version", version=version("uppd"))
 
     return parser.parse_args()
 
 
-async def main(args: Namespace):
+async def main(
+    *,
+    log_file: Path,
+    log_level: str,
+    infile: FileType,
+    outfile: list[Path],
+    index_url: str,
+    dry_run: bool,
+    **kwargs,
+) -> None:
     """Main."""
-    basicConfig(stream=args.log_file, level=getLevelName(args.log_level))
+    basicConfig(
+        filename=log_file,
+        level=getLevelName(log_level),
+        format = "%(levelname)s: %(message)s",
+    )
 
-    infiles = args.infile if isinstance(args.infile, list) else [args.infile]
-    if len(args.outfile) > len(infiles):
+    infiles = infile if isinstance(infile, list) else [infile]
+    if len(outfile) > len(infiles):
         logger.critical("More output files than input files.")
         exit(1)
 
+    for ifile, ofile in zip_longest(infiles, outfile):
 
-    for infile, outfile in zip_longest(infiles, args.outfile):
-
-        data = load(infile)
+        data = load(ifile)
         project = data.get("project")
         if project is None:
-            logger.critical(f"Did not find project section in input file: {infile.name}")
+            logger.critical(f"No project section in input file: {ifile}")
             exit(1)
 
         try:
-            async with ClientSession(args.index_url) as session:
+            async with ClientSession(index_url) as session:
                 if dependencies := project.get("dependencies"):
                     logger.info("[project.dependencies]:")
-                    # print(dep)
                     await upgrade_requirements(
-                        dependencies,
-                        session=session,
-                        skip=args.skip,
-                        dev=args.dev,
-                        pre=args.pre,
-                        post=args.post,
-                        match_operators=args.match_operators
+                        dependencies, session=session, **kwargs,
                     )
 
                 if optional_dep := project.get("optional-dependencies"):
                     for k, dependencies in optional_dep.items():
                         logger.info(f"[project.optional-dependencies.{k}]:")
                         await upgrade_requirements(
-                            dependencies,
-                            session=session,
-                            skip=args.skip,
-                            dev=args.dev,
-                            pre=args.pre,
-                            post=args.post,
-                            match_operators=args.match_operators
+                            dependencies, session=session, **kwargs,
                         )
 
         except ValueError:
             logger.critical("Invalid index-url.")
             exit(1)
 
-        if args.dry_run:
+        if dry_run:
             continue
 
-        if outfile:
-            with Path(outfile).open("w") as out:
+        if ofile:
+            with Path(ofile).open("w") as out:
                 dump(data, out)
                 continue
 
-        with Path(infile.name).open("w") as out:
+        with Path(ifile.name).open("w") as out:
             dump(data, out)
 
 
-def main_cli():
+def main_cli() -> None:
+    """Main."""
     args = parse_arguments()
-    asyncio.run(main(args))
+    asyncio.run(main(**vars(args)))
 
 
 if __name__ == "__main__":
-    args = parse_arguments()
-
-    asyncio.run(main(args))
+    main_cli()

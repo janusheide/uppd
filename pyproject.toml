@@ -52,9 +52,7 @@ dev = [
     "ruff==0.6.5",
     "semver==3.0.2",
     "setuptools-scm==8.1.0",
-    "types-setuptools==74.1.0.20240907",
     "twine==5.1.1",
-    "wheel>=0.40.0",
 ]
 
 [project.urls]
@@ -111,10 +109,10 @@ asyncio_default_fixture_loop_scope = "function"
 
 
 [tool.ruff.lint]
-# select = ["ALL"]
+select = ["ALL"]
 # as of 01/2024 ruff does not support isort configuration, so we disable I001
-# ignore = ["ANN101", "I001", "D107", "D203", "D213", "FIX", "INP", "G004", "PLR", "TD002", "TD003", "TCH001", "TCH002"]
+ignore = ["ANN003", "ANN101", "ASYNC230", "I001", "D107", "D203", "D213", "D401", "FIX", "INP", "G004", "PLR", "SIM105", "TD002", "TD003", "TCH001", "TCH002"]
+exclude = ["boil.py",]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]
-

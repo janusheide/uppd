@@ -3,45 +3,59 @@
 ..
 .. Distributed under the "BSD 3-Clause License", see LICENSE.rst.
 
-
 Update Python Project Dependencies (UPPD)
-========
+=========================================
 
 .. image:: https://github.com/janusheide/uppd/actions/workflows/unittests.yml/badge.svg
     :target: https://github.com/janusheide/uppd/actions/workflows/unittests.yml
     :alt: Unit tests
 
-Update dependencies and optional dependencies in pyproject.toml.
+.. image:: https://img.shields.io/pypi/pyversions/uppd
+   :alt: PyPI - Python Version
 
+.. image:: https://img.shields.io/librariesio/github/janusheide/bouillon
+   :alt: Libraries.io dependency status for GitHub repo
+
+
+Update dependencies and optional dependencies in pyproject.toml files.
 
 Getting Started
 ---------------
 
-::
+Install and run::
+
     pip install uppd
     uppd --help
 
-Logging
+Usage
+-----
+
+Set inputs and output files::
+
+    uppd -i pyproject.toml dev/pyproject.toml
+    uppd -i pyproject.toml dev/pyproject.toml -o pyproject.toml.updated
+
+Skip dependencies::
+
+    uppd --skip foo bar
+
+Allow upgrade to pre releases::
+
+    uppd --pre foo bar
+
+Development
+-----------
+
+Setup, run tests and release::
+
+    python boil.py setup
+    python boil.py lint
+    python boil.py test
+    python boil.py release
+
+Credits
 -------
 
-Supports standard log levels; DEBUG, INFO, WARING, ERROR, CRITICAL, and writing
-log to a file.
+This project aims to enable a similar workflow as pur_ for requirements.txt files
 
-Set the log level to ``debug``::
-
-    python boil --log-level=DEBUG test
-
-Set the log level to ``debug`` and redirect output from executed commands to
-``bar.log``::
-
-    python boil --log-level=DEBUG test >> bar.log
-
-Set the log level to ``debug`` and redirect output from executed commands to
-``bar.log`` and log information to ``foo.log``::
-
-    python boil --log-level=DEBUG --log-file=foo.log test >> bar.log
-
-Set the log level to ``debug`` and redirect output from executed commands and
-log information to ``foo.log``::
-
-    python boil --log-level=DEBUG --log-file=foo.log test >> foo.log
+.. _pur: https://github.com/alanhamlett/pip-update-requirements
