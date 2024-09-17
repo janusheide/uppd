@@ -92,8 +92,7 @@ def test(
 
 def upgrade(**kwargs) -> None:
     """Upgrade the versions of the used modules."""
-    logger.critical("upgrade step not implemented.")
-    setup(**kwargs)
+    bouillon.run(["uppd"], **kwargs)
 
 
 def build(**kwargs) -> None:
