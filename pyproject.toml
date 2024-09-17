@@ -104,7 +104,7 @@ filelock = "*"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
-asyncio_default_fixture_loop_scope = "function"
+asyncio_default_fixture_loop_scope = "module"
 
 
 [tool.ruff.lint]
@@ -115,5 +115,6 @@ exclude = ["boil.py",]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]
+
 
 [tool.setuptools_scm]
