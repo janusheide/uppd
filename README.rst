@@ -10,6 +10,13 @@ Update Python Project Dependencies (UPPD)
     :target: https://github.com/janusheide/uppd/actions/workflows/unittests.yml
     :alt: Unit tests
 
+.. image:: https://img.shields.io/pypi/pyversions/uppd
+   :alt: PyPI - Python Version
+
+.. image:: https://img.shields.io/librariesio/github/janusheide/bouillon
+   :alt: Libraries.io dependency status for GitHub repo
+
+
 Update dependencies and optional dependencies in pyproject.toml files.
 
 Getting Started

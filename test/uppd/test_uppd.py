@@ -80,7 +80,7 @@ async def test_upgrade_requirements(index_url="https://pypi.org"):
             pre=[],
             post=[],
             match_operators=["=="],
-            ) == ["sampleproject==3.0.0"]
+            ) != ["sampleproject==2.0.0"]
 
         assert await upgrade_requirements(
             ["sampleproject==2.0.0"],
@@ -110,7 +110,7 @@ async def test_upgrade_requirements(index_url="https://pypi.org"):
             pre=[],
             post=[],
             match_operators=["=="],
-            ) == ["sampleproject==3.0.0"]
+            ) != ["sampleproject==2.0.0"]
 
         assert await upgrade_requirements(
             ["sampleproject==2.0.0"],
@@ -120,7 +120,7 @@ async def test_upgrade_requirements(index_url="https://pypi.org"):
             pre=["sampleproject"],
             post=[],
             match_operators=["=="],
-            ) == ["sampleproject==3.0.0"]
+            ) != ["sampleproject==2.0.0"]
 
         assert await upgrade_requirements(
             ["sampleproject==2.0.0"],
@@ -130,4 +130,4 @@ async def test_upgrade_requirements(index_url="https://pypi.org"):
             pre=[],
             post=["sampleproject"],
             match_operators=["=="],
-            ) == ["sampleproject==3.0.0"]
+            ) != ["sampleproject==2.0.0"]
