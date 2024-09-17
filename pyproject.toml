@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=74", "wheel"]
+requires = ["setuptools>=74", "setuptools-scm>=8"]
 build-backend = "setuptools.build_meta"
 
 # The version number will be 0.0.0, as of 16/01-24 using setuptools_scm result
@@ -51,7 +51,6 @@ dev = [
     "mypy==1.11.2",
     "ruff==0.6.5",
     "semver==3.0.2",
-    "setuptools-scm==8.1.0",
     "twine==5.1.1",
 ]
 
@@ -116,3 +115,5 @@ exclude = ["boil.py",]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]
+
+[tool.setuptools_scm]
