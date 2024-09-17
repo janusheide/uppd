@@ -37,3 +37,9 @@ jobs:
 
     - name: Run unit tests
       run: python boil.py test
+
+    - name: Run build
+      run: python boil.py build
+
+    - name: Run clean
+      run: python boil.py clean
