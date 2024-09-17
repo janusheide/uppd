@@ -43,7 +43,7 @@ def setup(*, dry_run: bool, **kwargs) -> None:
 
 def lint(
     isort: bool = True,
-    liccheck: bool = True,
+    liccheck: bool = False,
     mypy: bool = True,
     ruff: bool = True,
     **kwargs,
@@ -194,7 +194,8 @@ def cli() -> Namespace:
         help="Do not run isort.")
     parser_lint.add_argument(
         "--no-liccheck", dest="liccheck", action="store_false",
-        help="Do not check that licenses of all used modules.")
+        default=False,
+        help="Do not check that licenses of all used modules. (Default disabled)")
     parser_lint.add_argument(
         "--no-mypy-check", dest="mypy", action="store_false",
         help="Do not perform mypy code analysis.")
