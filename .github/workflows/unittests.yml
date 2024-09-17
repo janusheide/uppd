@@ -43,3 +43,6 @@ jobs:
 
     - name: Run clean
       run: python boil.py clean
+
+    - name: Run upgrade
+      run: python boil.py uprade
