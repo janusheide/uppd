@@ -19,7 +19,7 @@ classifiers = [
   "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
   "Topic :: Software Development :: Build Tools",
-  "License :: OSI Approved :: MIT License",
+  "License :: OSI Approved :: BSD License",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
@@ -60,7 +60,6 @@ Repository = "https://github.com/janusheide/uppd"
 
 [project.scripts]
 uppd = "uppd.uppd:main_cli"
-
 
 [tool.coverage.report]
 show_missing = true
@@ -106,7 +105,6 @@ filelock = "*"
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "module"
 
-
 [tool.ruff.lint]
 select = ["ALL"]
 # as of 01/2024 ruff does not support isort configuration, so we disable I001
@@ -115,6 +113,5 @@ exclude = ["boil.py",]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]
-
 
 [tool.setuptools_scm]
