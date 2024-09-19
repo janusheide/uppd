@@ -49,7 +49,6 @@ def find_latest_version(
 
     versions.sort(key=Version, reverse=True)
     for ver in versions:
-
         v = parse(ver)
         if not dev and v.is_devrelease:
             continue
