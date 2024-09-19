@@ -69,11 +69,11 @@ def test(
     **kwargs,
 ) -> None:
     """Run tests."""
-    # if test_files:
-    #     if not bouillon.check_for_test_files(
-    #         os.path.join('src', bouillon.git.repository_name()),
-    #             os.path.join('test', bouillon.git.repository_name())):
-    #         exit(1)
+    if test_files:
+        if not bouillon.check_for_test_files(
+            os.path.join('src', bouillon.git.repository_name()),
+                os.path.join('test', bouillon.git.repository_name())):
+            exit(1)
 
     # https://docs.pytest.org/en/latest/
     # https://pytest-cov.readthedocs.io/en/latest/
