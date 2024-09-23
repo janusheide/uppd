@@ -71,24 +71,14 @@ def test(
     """Run tests."""
     if test_files:
         if not bouillon.check_for_test_files(
-            os.path.join('src', bouillon.git.repository_name()),
-                os.path.join('test', bouillon.git.repository_name())):
+            os.path.join("src", bouillon.git.repository_name()),
+                os.path.join("test", bouillon.git.repository_name())):
             exit(1)
 
     # https://docs.pytest.org/en/latest/
     # https://pytest-cov.readthedocs.io/en/latest/
     if unit_tests:
-        bouillon.run([
-            "pytest",
-            f'{os.path.join("test", "uppd")}',
-            "--cov=uppd",
-            "--cov-report",
-            "term-missing",
-            "--cov-fail-under=50",
-            "--durations=5",
-            "-vv",
-            ],
-            **kwargs)
+        bouillon.run(["pytest"], **kwargs)
 
 def upgrade(**kwargs) -> None:
     """Upgrade the versions of the used modules."""
@@ -142,7 +132,7 @@ def release(*, version: str, **kwargs) -> None:
     EDITOR = os.environ.get("EDITOR", "nano")
     bouillon.run([EDITOR, "NEWS.rst"], **kwargs)
     bouillon.run(["git", "add", "NEWS.rst"], **kwargs)
-    bouillon.run(["git", "commit", "-m", '"preparing release"'], **kwargs)
+    bouillon.run(["git", "commit", "-m", f"preparing release {version}"], **kwargs)
 
     logger.debug("Create an annotated tag, used by setuptools_scm.")
     bouillon.run(["git", "tag", "-a", f"{version}", "-m",
