@@ -49,7 +49,7 @@ dev = [
     "isort==5.13.2",
     "liccheck==0.9.2",
     "mypy==1.11.2",
-    "ruff==0.6.5",
+    "ruff==0.6.7",
     "semver==3.0.2",
     "twine==5.1.1",
 ]
@@ -104,6 +104,7 @@ filelock = "*"
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "module"
+addopts = "--cov=uppd -vv --cov-report term-missing --cov-fail-under=50"
 
 [tool.ruff.lint]
 select = ["ALL"]
