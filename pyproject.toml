@@ -57,6 +57,7 @@ dev = [
 [project.urls]
 Homepage = "https://github.com/janusheide/uppd"
 Repository = "https://github.com/janusheide/uppd"
+Changelog = "https://github.com/janusheide/uppd/blob/main/NEWS.rst"
 
 [project.scripts]
 uppd = "uppd.uppd:main_cli"
