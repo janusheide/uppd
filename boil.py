@@ -123,7 +123,7 @@ def cli() -> Namespace:
 def run(*, function: Callable, log_level: str, log_file: str, **kwargs) -> None:
     """Setup logging and run a step."""
     logging.basicConfig(filename=log_file, level=log_level)
-    if function != setup and util.find_spec("bouillon") is None:
+    if util.find_spec("bouillon") is None:
         logger.error('Failed to import bouillon, run "pip install -e .[dev]" first.')
         exit(1)
 
