@@ -45,6 +45,7 @@ test = [
 dev = [
     "uppd[test]",
     "bouillon==2.1.0",
+    "brundle==0.1.0",
     "build==1.2.2",
     "isort==5.13.2",
     "licensecheck==2024.3",
