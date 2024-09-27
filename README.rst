@@ -13,7 +13,7 @@ Update Python Project Dependencies (UPPD)
 .. image:: https://img.shields.io/pypi/pyversions/uppd
    :alt: PyPI - Python Version
 
-.. image:: https://img.shields.io/librariesio/github/janusheide/bouillon
+.. image:: https://img.shields.io/librariesio/github/janusheide/uppd
    :alt: Libraries.io dependency status for GitHub repo
 
 
@@ -48,9 +48,9 @@ Development
 
 Setup, run tests and release::
 
-    python boil.py setup
-    python boil.py lint
-    python boil.py test
+    pip install -e .[dev]
+    brundle
+    pytest
     python boil.py release
 
 Credits
