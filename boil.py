@@ -109,6 +109,9 @@ def cli() -> Namespace:
 
     subparsers = parser.add_subparsers(help="Available sub commands")
 
+    parser_build = subparsers.add_parser("build", help="Build.")
+    parser_build.set_defaults(function=build)
+
     parser_clean = subparsers.add_parser("clean", help="Clean temp files.")
     parser_clean.set_defaults(function=clean)
 
