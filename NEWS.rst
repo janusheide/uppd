@@ -6,7 +6,7 @@ Lists of changes between versions.
 Latest
 ------
 * Minor: Simplify dev setup and release.
-
+* Minor: Use brundle to run linters.
 
 0.3.0
 -----
