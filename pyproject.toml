@@ -37,6 +37,7 @@ dependencies = [
 
 [project.optional-dependencies]
 test = [
+    "brundle[linters]==0.3.0",
     "pytest==8.3.3",
     "pytest-aiohttp==1.0.5",
     "pytest-asyncio==0.24.0",
@@ -45,12 +46,7 @@ test = [
 dev = [
     "uppd[test]",
     "bouillon==2.1.0",
-    "brundle==0.1.0",
     "build==1.2.2",
-    "isort==5.13.2",
-    "licensecheck==2024.3",
-    "mypy==1.11.2",
-    "ruff==0.6.8",
     "semver==3.0.2",
     "twine==5.1.1",
 ]
@@ -72,6 +68,9 @@ include_trailing_comma = "True"
 
 [tool.licensecheck]
 using = "PEP631:test;dev"
+
+[tool.mypy]
+exclude = ["build", "boil.py",]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

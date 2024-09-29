@@ -16,7 +16,6 @@ Update Python Project Dependencies (UPPD)
 .. image:: https://img.shields.io/librariesio/github/janusheide/uppd
    :alt: Libraries.io dependency status for GitHub repo
 
-
 Update dependencies and optional dependencies in pyproject.toml files.
 
 Getting Started
