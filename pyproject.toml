@@ -61,6 +61,7 @@ uppd = "uppd.uppd:main_cli"
 
 [tool.coverage.report]
 show_missing = true
+fail_under = 50
 
 [tool.isort]
 multi_line_output = 5
@@ -75,7 +76,7 @@ exclude = ["build"]
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "module"
-addopts = "--cov=uppd -vv --cov-report term-missing --cov-fail-under=50"
+addopts = "--cov=uppd -vv"
 
 [tool.ruff.lint]
 select = ["ALL"]
