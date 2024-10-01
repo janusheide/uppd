@@ -25,6 +25,7 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
 ]
 
 keywords=["dependency management", "maintenance", "utility"]
@@ -47,7 +48,6 @@ dev = [
     "uppd[test]",
     "bouillon==2.2.0",
     "build==1.2.2",
-    "semver==3.0.2",
     "twine==5.1.1",
 ]
 
