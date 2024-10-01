@@ -45,7 +45,7 @@ test = [
 ]
 dev = [
     "uppd[test]",
-    "bouillon==2.1.0",
+    "bouillon==2.2.0",
     "build==1.2.2",
     "semver==3.0.2",
     "twine==5.1.1",
@@ -70,7 +70,7 @@ include_trailing_comma = "True"
 using = "PEP631:test;dev"
 
 [tool.mypy]
-exclude = ["build", "boil.py",]
+exclude = ["build"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -81,7 +81,6 @@ addopts = "--cov=uppd -vv --cov-report term-missing --cov-fail-under=50"
 select = ["ALL"]
 # as of 01/2024 ruff does not support isort configuration, so we disable I001
 ignore = ["ANN003", "ANN101", "ASYNC230", "I001", "D107", "D203", "D213", "D401", "FIX", "INP", "G004", "PLR", "SIM105", "TD002", "TD003", "TCH001", "TCH002"]
-exclude = ["boil.py",]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]

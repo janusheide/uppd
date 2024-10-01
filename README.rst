@@ -50,7 +50,7 @@ Setup, run tests and release::
     pip install -e .[dev]
     brundle
     pytest
-    python boil.py release
+    bouillon release
 
 Credits
 -------
