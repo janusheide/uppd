@@ -5,6 +5,7 @@ Lists of changes between versions.
 
 Latest
 ------
+* Minor: Support Python 3.13.
 * Minor: Use cli from bouillon instead of boil.py.
 * Minor: Use brundle to run linters.
 
