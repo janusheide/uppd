@@ -5,7 +5,7 @@ Lists of changes between versions.
 
 Latest
 ------
-* Minor: Simplify dev setup and release.
+* Minor: Use cli from bouillon instead of boil.py.
 * Minor: Use brundle to run linters.
 
 0.3.0
