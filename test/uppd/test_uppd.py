@@ -3,6 +3,9 @@
 #
 # Distributed under the "BSD 3-Clause License", see LICENSE.txt.
 
+import sys
+
+import pytest
 from aiohttp import ClientSession
 from packaging.requirements import SpecifierSet
 from packaging.specifiers import Specifier
@@ -11,6 +14,7 @@ from uppd import (
     find_latest_version, get_package_info, set_version, set_versions,
     upgrade_requirements,
 )
+from uppd.uppd import cli, main, main_cli
 
 
 async def test_get_package_info(index_url="https://pypi.org"):
@@ -131,3 +135,73 @@ async def test_upgrade_requirements(index_url="https://pypi.org"):
             post=["sampleproject"],
             match_operators=["=="],
             ) != ["sampleproject==2.0.0"]
+
+
+def test_cli():
+
+    with pytest.raises(SystemExit):
+        assert cli(["--help"])
+
+    with pytest.raises(SystemExit):
+        assert cli(["--version"])
+
+    a = vars(cli(["--log-level", "INFO"]))
+    assert a["log_file"] is None
+    assert a["log_level"] == "INFO"
+
+    a = vars(cli(["--skip", "foo", "bar"]))
+    assert a["skip"] == ["foo", "bar"]
+
+    a = vars(cli(["--post", "foo"]))
+    assert a["post"] == ["foo"]
+
+    a = vars(cli(["--post"]))
+    assert a["post"] == []
+
+    a = vars(cli(["--pre"]))
+    assert a["pre"] == []
+
+    a = vars(cli(["--pre", "foo"]))
+    assert a["pre"] == ["foo"]
+
+
+def test_main_cli():
+    assert main_cli() is None
+
+
+
+async def test_main():
+    arguments = vars(cli(sys.argv[1:]))
+
+    # print(defaults)
+
+    # arguments["infile"] = ["LICENSE.txt"]
+
+    # with pytest.raises(SystemExit) as err:
+    #     await main(**arguments)
+    # assert err.value.code == 1
+
+    arguments["outfile"] = ["pyproject.toml"]
+    await main(**arguments)
+
+    arguments["outfile"] = ["foo"]
+    with pytest.raises(SystemExit) as err:
+        await main(**arguments)
+    assert err.value.code == 1
+
+
+    arguments["outfile"] = ["foo", "bar"]
+    with pytest.raises(SystemExit) as err:
+        await main(**arguments)
+    assert err.value.code == 1
+
+    # with Path("pyproject.toml").open("r") as pp:
+    #     arguments["infile"] = [pp, pp]
+    # await main(**arguments)
+
+    # assert False
+    #     # await main
+
+    arguments = vars(cli(sys.argv[1:]))
+    arguments["dry_run"] = True
+    await main(**arguments)

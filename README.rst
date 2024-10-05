@@ -26,6 +26,43 @@ Install and run::
     pip install uppd
     uppd --help
 
+    usage: uppd [-h]
+                [-i [INFILE ...]]
+                [-o [OUTFILE ...]]
+                [-m [{<,<=,==,>=,>,~=} ...]]
+                [--skip [SKIP ...]]
+                [--dev [DEV ...]]
+                [--pre [PRE ...]]
+                [--post [POST ...]]
+                [--index-url INDEX_URL]
+                [--log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
+                [--log-file LOG_FILE]
+                [--dry-run]
+                [-v]
+
+    Update Python Project Dependencies.
+
+    options:
+    -h, --help            show this help message and exit
+    -i [INFILE ...], --infile [INFILE ...]
+                          path(s) to input file(s) (default: pyproject.toml)
+    -o [OUTFILE ...], --outfile [OUTFILE ...]
+                            path(s) to output file(s), defaults to overwritting inputs files. (default: [])
+    -m [{<,<=,==,>=,>,~=} ...], --match_operators [{<,<=,==,>=,>,~=} ...]
+                          operators to upgrade. (default: ['==', '<=', '~='])
+    --skip [SKIP ...]     dependencies to skip upgrade. (default: [])
+    --dev [DEV ...]       dependencies to upgrade to dev release. (default: [])
+    --pre [PRE ...]       dependencies to upgrade to pre release. (default: [])
+    --post [POST ...]     dependencies to upgrade to post release. (default: ['*'])
+    --index-url INDEX_URL
+                          base URL of the Python Package Index. (default: https://pypi.org)
+    --log-level {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+                          logging level. (default: INFO)
+    --log-file LOG_FILE   pipe loggining to file instead of stdout. (default: None)
+    --dry-run             do not save changes to output file(s). (default: False)
+    -v, --version         show program's version number and exit
+
+
 Usage
 -----
 
