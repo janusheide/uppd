@@ -11,6 +11,7 @@ Look through pyproject.toml and update dependencies and optional dependencies.
 from __future__ import annotations
 
 import asyncio
+import sys
 from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
@@ -137,7 +138,7 @@ async def upgrade_requirements(
     return dependencies
 
 
-def parse_arguments() -> Namespace:
+def cli(args) -> Namespace:
     """Parse arguments."""
     parser = ArgumentParser(
         description="Update Python Project Dependencies.",
@@ -148,14 +149,14 @@ def parse_arguments() -> Namespace:
         nargs="*",
         default="pyproject.toml",
         type=FileType("r"),
-        help="Path(s) to input file(s)")
+        help="path(s) to input file(s)")#
 
     parser.add_argument(
         "-o", "--outfile",
-        nargs="+",
+        nargs="*",
         default=[],
         type=Path,
-        help="Path(s) to output file(s), defaults to overwritting inputs files.",
+        help="path(s) to output file(s), defaults to overwritting inputs files.",
         )
 
     parser.add_argument(
@@ -164,42 +165,42 @@ def parse_arguments() -> Namespace:
         help="operators to upgrade.")
 
     parser.add_argument(
-        "--skip", nargs="*", default=[""],
-        help="List of dependencies to skip upgrade.")
+        "--skip", type=str, nargs="*", default=[],
+        help="dependencies to skip upgrade.")
 
     parser.add_argument(
-        "--dev", nargs="*", default=[""],
-        help="List of dependencies to upgrade to dev release.")
+        "--dev", type=str, nargs="*", default=[],
+        help="dependencies to upgrade to dev release.")
 
     parser.add_argument(
-        "--pre", nargs="*", default=[""],
-        help="List of dependencies to upgrade to pre release.")
+        "--pre", type=str, nargs="*", default=[],
+        help="dependencies to upgrade to pre release.")
 
     parser.add_argument(
-        "--post", nargs="*", default=["*"],
-        help="List of dependencies to upgrade to post release.")
+        "--post", type=str, nargs="*", default=["*"],
+        help="dependencies to upgrade to post release.")
 
     parser.add_argument(
-        "--dry-run", action="store_true",
-        help="Pipe loggining to file instead of stdout.")
-
-    parser.add_argument(
-        "--index-url", default="https://pypi.org",
-        help="Base URL of the Python Package Index.")
+        "--index-url", type=str, default="https://pypi.org",
+        help="base URL of the Python Package Index.")
 
     parser.add_argument(
         "--log-level", default="INFO",
         choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
-        help="Logging level.")
+        help="logging level.")
 
     parser.add_argument(
         "--log-file",
         type=Path,
-        help="Pipe loggining to file instead of stdout.")
+        help="pipe loggining to file instead of stdout.")
+
+    parser.add_argument(
+        "--dry-run", action="store_true",
+        help="do not save changes to output file(s).")
 
     parser.add_argument("-v", "--version", action="version", version=version("uppd"))
 
-    return parser.parse_args()
+    return parser.parse_args(args)
 
 
 async def main(
@@ -265,8 +266,7 @@ async def main(
 
 def main_cli() -> None:
     """Main."""
-    args = parse_arguments()
-    asyncio.run(main(**vars(args)))
+    asyncio.run(main(**vars(cli(sys.argv[1:]))))
 
 
 if __name__ == "__main__":
