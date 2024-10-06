@@ -32,11 +32,11 @@ jobs:
     - name: Setup environment
       run: pip install -e .[test]
 
-    - name: Run linters
-      run: brundle
-
     - name: Run unit tests
       run: pytest
 
     - name: Setup environment
       run: pip install -e .[dev]
+
+    - name: Run linters
+      run: brundle
