@@ -16,7 +16,7 @@ from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
 from importlib.metadata import version
-from itertools import zip_longest
+from io import TextIOWrapper
 from logging import basicConfig, getLevelName, getLogger
 from pathlib import Path
 
@@ -25,6 +25,7 @@ from packaging.requirements import Requirement, SpecifierSet
 from packaging.specifiers import Specifier
 from packaging.version import Version, parse
 from tomlkit import dump, load
+from tomlkit.exceptions import ParseError
 
 logger = getLogger(__name__)
 
@@ -146,17 +147,19 @@ def cli(args) -> Namespace:
 
     parser.add_argument(
         "-i", "--infile",
-        nargs="*",
         default="pyproject.toml",
-        type=FileType("r"),
-        help="path(s) to input file(s)")#
+        type=FileType("r+"),
+        help="path(s) to input file(s)",
+        )
+
+    infile = parser.parse_args(["-i", "pyproject.toml"]).infile
+    uppd_settings = load(infile).get("tool", {}).get("uppd", {})
 
     parser.add_argument(
         "-o", "--outfile",
-        nargs="*",
-        default=[],
-        type=Path,
-        help="path(s) to output file(s), defaults to overwritting inputs files.",
+        default=uppd_settings.get("outfile", infile),
+        type=FileType("w"),
+        help="path(s) to output file(s).",
         )
 
     parser.add_argument(
@@ -207,8 +210,8 @@ async def main(
     *,
     log_file: Path,
     log_level: str,
-    infile: FileType,
-    outfile: list[Path],
+    infile: TextIOWrapper,
+    outfile: TextIOWrapper,
     index_url: str,
     dry_run: bool,
     **kwargs,
@@ -220,48 +223,42 @@ async def main(
         format = "%(levelname)s: %(message)s",
     )
 
-    infiles = infile if isinstance(infile, list) else [infile]
-    if len(outfile) > len(infiles):
-        logger.critical("More output files than input files.")
+    try:
+        data = load(infile)
+    except ParseError:
+        logger.critical(f"Error parsing input toml file: {infile}")
         exit(1)
 
-    for ifile, ofile in zip_longest(infiles, outfile):
+    project = data.get("project")
+    if project is None:
+        logger.critical(f"No project section in input file: {infile}")
+        exit(1)
 
-        data = load(ifile)
-        project = data.get("project")
-        if project is None:
-            logger.critical(f"No project section in input file: {ifile}")
-            exit(1)
 
-        try:
-            async with ClientSession(index_url) as session:
-                if dependencies := project.get("dependencies"):
-                    logger.info("[project.dependencies]:")
+    try:
+        async with ClientSession(index_url) as session:
+            if dependencies := project.get("dependencies"):
+                logger.info("[project.dependencies]:")
+                await upgrade_requirements(
+                    dependencies, session=session, **kwargs,
+                )
+
+            if optional_dep := project.get("optional-dependencies"):
+                for k, dependencies in optional_dep.items():
+                    logger.info(f"[project.optional-dependencies.{k}]:")
                     await upgrade_requirements(
                         dependencies, session=session, **kwargs,
                     )
 
-                if optional_dep := project.get("optional-dependencies"):
-                    for k, dependencies in optional_dep.items():
-                        logger.info(f"[project.optional-dependencies.{k}]:")
-                        await upgrade_requirements(
-                            dependencies, session=session, **kwargs,
-                        )
+    except ValueError:
+        logger.critical("Invalid index-url.")
+        exit(1)
 
-        except ValueError:
-            logger.critical("Invalid index-url.")
-            exit(1)
+    if dry_run:
+        return
 
-        if dry_run:
-            continue
-
-        if ofile:
-            with Path(ofile).open("w") as out:
-                dump(data, out)
-                continue
-
-        with Path(ifile.name).open("w") as out:
-            dump(data, out)
+    outfile.seek(0)
+    dump(data, outfile)
 
 
 def main_cli() -> None:
