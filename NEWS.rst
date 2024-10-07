@@ -5,6 +5,8 @@ Lists of changes between versions.
 
 Latest
 ------
+* Minor: Support reading settings from pyproject.toml
+* Minor: Accepts atmost a single input and output file.
 * Minor: Pypy support.
 
 1.0.0

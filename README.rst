@@ -27,8 +27,8 @@ Install and run::
     uppd --help
 
     usage: uppd [-h]
-                [-i [INFILE ...]]
-                [-o [OUTFILE ...]]
+                [-i INFILE]
+                [-o OUTFILE]
                 [-m [{<,<=,==,>=,>,~=} ...]]
                 [--skip [SKIP ...]]
                 [--dev [DEV ...]]
@@ -44,11 +44,11 @@ Install and run::
 
     options:
     -h, --help            show this help message and exit
-    -i [INFILE ...], --infile [INFILE ...]
+    -i INFILE, --infile INFILE
                           path(s) to input file(s) (default: pyproject.toml)
-    -o [OUTFILE ...], --outfile [OUTFILE ...]
-                            path(s) to output file(s), defaults to overwritting inputs files. (default: [])
-    -m [{<,<=,==,>=,>,~=} ...], --match_operators [{<,<=,==,>=,>,~=} ...]
+    -o OUTFILE, --outfile OUTFILE
+                            path(s) to output file(s). (default: [])
+    -m [{<,<=,==,>=,>,~=} ...], --match-operators [{<,<=,==,>=,>,~=} ...]
                           operators to upgrade. (default: ['==', '<=', '~='])
     --skip [SKIP ...]     dependencies to skip upgrade. (default: [])
     --dev [DEV ...]       dependencies to upgrade to dev release. (default: [])
@@ -78,6 +78,18 @@ Skip dependencies::
 Allow upgrade to pre releases::
 
     uppd --pre foo bar
+
+
+The following settings (with defaults) can be overwritten in the ``infile``::
+
+    [tool.uppd]
+    match_operators = ["==", "<=", "~="]
+    skip = []
+    dev = []
+    pre = []
+    post = ["*"]
+    index_url = "https://pypi.org"
+
 
 Development
 -----------

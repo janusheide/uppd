@@ -163,28 +163,29 @@ def cli(args) -> Namespace:
         )
 
     parser.add_argument(
-        "-m", "--match_operators", nargs="*", default=["==", "<=", "~="],
+        "-m", "--match-operators", nargs="*",
+        default=uppd_settings.get("match_operators", ["==", "<=", "~="]),
         choices=["<", "<=", "==", ">=", ">", "~="],
         help="operators to upgrade.")
 
     parser.add_argument(
-        "--skip", type=str, nargs="*", default=[],
+        "--skip", type=str, nargs="*", default=uppd_settings.get("skip", []),
         help="dependencies to skip upgrade.")
 
     parser.add_argument(
-        "--dev", type=str, nargs="*", default=[],
+        "--dev", type=str, nargs="*", default=uppd_settings.get("dev", []),
         help="dependencies to upgrade to dev release.")
 
     parser.add_argument(
-        "--pre", type=str, nargs="*", default=[],
+        "--pre", type=str, nargs="*", default=uppd_settings.get("pre", []),
         help="dependencies to upgrade to pre release.")
 
     parser.add_argument(
-        "--post", type=str, nargs="*", default=["*"],
+        "--post", type=str, nargs="*", default=uppd_settings.get("post", ["*"]),
         help="dependencies to upgrade to post release.")
 
     parser.add_argument(
-        "--index-url", type=str, default="https://pypi.org",
+        "--index-url", type=str, default=uppd_settings.get("index_url", "https://pypi.org"),
         help="base URL of the Python Package Index.")
 
     parser.add_argument(
@@ -233,7 +234,6 @@ async def main(
     if project is None:
         logger.critical(f"No project section in input file: {infile}")
         exit(1)
-
 
     try:
         async with ClientSession(index_url) as session:
