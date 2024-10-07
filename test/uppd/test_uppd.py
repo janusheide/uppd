@@ -170,37 +170,23 @@ def test_main_cli():
 
 
 
-async def test_main():
+async def test_main(tmp_path):
     arguments = vars(cli(sys.argv[1:]))
-
-    # print(defaults)
-
-    # arguments["infile"] = ["LICENSE.txt"]
-
-    # with pytest.raises(SystemExit) as err:
-    #     await main(**arguments)
-    # assert err.value.code == 1
-
-    arguments["outfile"] = ["pyproject.toml"]
     await main(**arguments)
 
-    arguments["outfile"] = ["foo"]
-    with pytest.raises(SystemExit) as err:
+    d = tmp_path / "foo"
+    d.mkdir()
+    p = d / "bar"
+    p.write_text("[foobar]")
+
+    arguments["infile"] = p.open("r+")
+    with pytest.raises(SystemExit):
         await main(**arguments)
-    assert err.value.code == 1
 
-
-    arguments["outfile"] = ["foo", "bar"]
-    with pytest.raises(SystemExit) as err:
+    p.write_text("kazhing")
+    arguments["infile"] = p.open("r+")
+    with pytest.raises(SystemExit):
         await main(**arguments)
-    assert err.value.code == 1
-
-    # with Path("pyproject.toml").open("r") as pp:
-    #     arguments["infile"] = [pp, pp]
-    # await main(**arguments)
-
-    # assert False
-    #     # await main
 
     arguments = vars(cli(sys.argv[1:]))
     arguments["dry_run"] = True
