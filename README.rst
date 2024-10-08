@@ -68,8 +68,8 @@ Usage
 
 Set inputs and output files::
 
-    uppd -i pyproject.toml dev/pyproject.toml
-    uppd -i pyproject.toml dev/pyproject.toml -o pyproject.toml.updated
+    uppd -i dev/pyproject.toml
+    uppd -i pyproject.toml -o pyproject.toml.updated
 
 Skip dependencies::
 
