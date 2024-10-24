@@ -10,7 +10,7 @@ from aiohttp import ClientSession
 from packaging.requirements import SpecifierSet
 from packaging.specifiers import Specifier
 
-from uppd import (
+from uppd.uppd import (
     find_latest_version, get_package_info, set_version, set_versions,
     upgrade_requirements,
 )
@@ -64,7 +64,26 @@ def test_set_versions():
         ) == SpecifierSet(">0.1, ~=0.2")
 
 
-async def test_find_latest_version(index_url="https://pypi.org"):
+def test_find_latest_version():
+    assert find_latest_version(
+        {"versions":["0.0.0"], "files":[{"filename":"1.py"}]},
+        dev=False, pre=False, post=True) is None
+
+    p = {
+        "versions": ["0.0.12", "0.0.13"],
+        "files": [
+            {"filename":"*0.0.12", "yanked": False},
+            {"filename":"*0.0.12", "yanked": True},
+        ],
+    }
+
+    assert find_latest_version(p, dev=False, pre=False, post=False) == "0.0.12"
+    assert find_latest_version(p, dev=True, pre=False, post=False) == "0.0.12"
+    assert find_latest_version(p, dev=False, pre=True, post=False) == "0.0.12"
+    assert find_latest_version(p, dev=False, pre=False, post=True) == "0.0.12"
+
+
+async def test_find_latest_version_sampleproject(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
         sp = await get_package_info("sampleproject", session=session)
         assert find_latest_version(sp, dev=False, pre=False, post=False) == "3.0.0"
