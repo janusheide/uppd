@@ -52,7 +52,7 @@ dev = [
     "isort==5.13.2",
     "licensecheck==2024.3",
     "mypy==1.13.0",
-    "ruff==0.7.0",
+    "ruff==0.7.1",
     "bouillon==2.5.0",
     "build==1.2.2.post1",
     "twine==5.1.1",
@@ -68,7 +68,7 @@ uppd = "uppd.uppd:main_cli"
 
 [tool.coverage.report]
 show_missing = true
-fail_under = 90
+fail_under = 95
 
 [tool.isort]
 multi_line_output = 5
