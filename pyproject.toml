@@ -51,9 +51,9 @@ dev = [
     "brundle==1.1.0",
     "isort==5.13.2",
     "licensecheck==2024.3",
-    "mypy==1.11.2",
-    "ruff==0.6.9",
-    "bouillon==2.4.0",
+    "mypy==1.13.0",
+    "ruff==0.7.0",
+    "bouillon==2.5.0",
     "build==1.2.2.post1",
     "twine==5.1.1",
 ]
