@@ -48,10 +48,11 @@ def find_latest_version(
 ) -> str | None:
     """Find latets version of package."""
     versions = package["versions"]
-
     versions.sort(key=Version, reverse=True)
+
     for ver in versions:
         v = parse(ver)
+
         if not dev and v.is_devrelease:
             continue
         if not pre and v.is_prerelease:
@@ -60,10 +61,8 @@ def find_latest_version(
             continue
 
         for file in reversed(package["files"]):
-            if (ver in file) and file["yanked"]:
-                continue
-
-            return ver
+            if (ver in file["filename"]) and not file["yanked"]:
+                return ver
 
     return None
 

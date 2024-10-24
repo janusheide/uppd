@@ -3,6 +3,10 @@ News
 
 Lists of changes between versions.
 
+Latest
+------
+* Minor: Downgrade if newest version is yanked.
+
 1.1.0
 -----
 * Minor: Support reading settings from pyproject.toml
