@@ -3,13 +3,13 @@ News
 
 Lists of changes between versions.
 
-Latest
+1.2.0
 ------
 * Minor: Downgrade if newest version is yanked.
 
 1.1.0
 -----
-* Minor: Support reading settings from pyproject.toml
+* Minor: Support reading settings from pyproject.toml.
 * Minor: Accepts atmost a single input and output file.
 * Minor: Pypy support.
 
@@ -21,8 +21,8 @@ Latest
 
 0.3.0
 -----
-* Initial release #2
+* Initial release #2.
 
 0.2.0
 ------
-* Initial release
+* Initial release.
