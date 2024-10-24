@@ -70,10 +70,10 @@ def test_find_latest_version():
         dev=False, pre=False, post=True) is None
 
     p = {
-        "versions": ["0.0.12", "0.0.13"],
+        "versions": ["0.0.12", "0.0.13", "0.0.13-post", "0.0.13-dev", "0.0.14-pre"],
         "files": [
             {"filename":"*0.0.12", "yanked": False},
-            {"filename":"*0.0.12", "yanked": True},
+            {"filename":"*0.0.13", "yanked": True},
         ],
     }
 
@@ -204,6 +204,11 @@ async def test_main(tmp_path):
 
     p.write_text("kazhing")
     arguments["infile"] = p.open("r+")
+    with pytest.raises(SystemExit):
+        await main(**arguments)
+
+    arguments = vars(cli(sys.argv[1:]))
+    arguments["index_url"] = "foo"
     with pytest.raises(SystemExit):
         await main(**arguments)
 
