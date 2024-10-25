@@ -72,7 +72,7 @@ def set_version(
     specifier: Specifier, *, version: Version, match_operators: list[str],
 ) -> Specifier:
     """Set specifier version if operator matchecs."""
-    if _find_in(match_operators, specifier.operator):
+    if specifier.operator in match_operators:
         return Specifier(f"{specifier.operator}{version}")
 
     return specifier
