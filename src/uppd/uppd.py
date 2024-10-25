@@ -148,7 +148,6 @@ async def upgrade_requirements(
         dependencies[e] = str(dep)
 
 
-
 def cli(args) -> Namespace:
     """Parse arguments."""
     parser = ArgumentParser(

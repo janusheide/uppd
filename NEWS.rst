@@ -3,6 +3,10 @@ News
 
 Lists of changes between versions.
 
+Latest
+------
+* Minor: Upgrade versions concurrently.
+
 1.2.0
 ------
 * Minor: Downgrade if newest version is yanked.
