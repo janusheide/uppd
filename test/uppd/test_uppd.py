@@ -94,65 +94,77 @@ async def test_find_latest_version_sampleproject(index_url="https://pypi.org"):
 async def test_upgrade_requirements(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
 
-        assert await upgrade_requirements(
-            ["sampleproject==2.0.0"],
+        dep = ["sampleproject==2.0.0"]
+        await upgrade_requirements(
+            dep,
             session=session,
             skip=[],
             dev=[],
             pre=[],
             post=[],
             match_operators=["=="],
-            ) != ["sampleproject==2.0.0"]
+            )
+        assert dep != ["sampleproject==2.0.0"]
 
-        assert await upgrade_requirements(
-            ["sampleproject==2.0.0"],
+        dep = ["sampleproject==2.0.0"]
+        await upgrade_requirements(
+            dep,
             session=session,
             skip=[],
             dev=[],
             pre=[],
             post=[],
             match_operators=[],
-            ) == ["sampleproject==2.0.0"]
+            )
+        assert dep == ["sampleproject==2.0.0"]
 
-        assert await upgrade_requirements(
-            ["sampleproject==2.0.0"],
+        dep = ["sampleproject==2.0.0"]
+        await upgrade_requirements(
+            dep,
             session=session,
             skip=["sampleproject"],
             dev=[],
             pre=[],
             post=[],
             match_operators=["=="],
-            ) == ["sampleproject==2.0.0"]
+            )
+        assert dep == ["sampleproject==2.0.0"]
 
-        assert await upgrade_requirements(
-            ["sampleproject==2.0.0"],
+        dep = ["sampleproject==2.0.0"]
+        await upgrade_requirements(
+            dep,
             session=session,
             skip=[],
             dev=["sampleproject"],
             pre=[],
             post=[],
             match_operators=["=="],
-            ) != ["sampleproject==2.0.0"]
+            )
+        assert dep != ["sampleproject==2.0.0"]
 
-        assert await upgrade_requirements(
-            ["sampleproject==2.0.0"],
+        dep = ["sampleproject==2.0.0"]
+        await upgrade_requirements(
+            dep,
             session=session,
             skip=[],
             dev=[],
             pre=["sampleproject"],
             post=[],
             match_operators=["=="],
-            ) != ["sampleproject==2.0.0"]
+            )
+        assert dep != ["sampleproject==2.0.0"]
 
-        assert await upgrade_requirements(
-            ["sampleproject==2.0.0"],
+        dep = ["sampleproject==2.0.0"]
+        await upgrade_requirements(
+            dep,
             session=session,
             skip=[],
             dev=[],
             pre=[],
             post=["sampleproject"],
             match_operators=["=="],
-            ) != ["sampleproject==2.0.0"]
+            )
+        assert dep != ["sampleproject==2.0.0"]
 
 
 def test_cli():

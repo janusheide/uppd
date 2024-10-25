@@ -140,15 +140,13 @@ async def upgrade_requirement(
 async def upgrade_requirements(
     dependencies: list[str],
     **kwargs,
-) -> list[str]:
+) -> None:
     """Upgrade requirements."""
-    deps = await gather(*[
-        (upgrade_requirement(Requirement(d), **kwargs)) for d in dependencies])
-
-    for (e, _), dep in zip(enumerate(dependencies), deps):
+    for e, dep in enumerate(await gather(
+        *[(upgrade_requirement(Requirement(d), **kwargs)) for d in dependencies],
+    )):
         dependencies[e] = str(dep)
 
-    return dependencies
 
 
 def cli(args) -> Namespace:
@@ -247,24 +245,16 @@ async def main(
         logger.critical(f"No project section in input file: {infile}")
         exit(1)
 
+    deps = [
+        project.get("dependencies", []),
+        *[v for k,v in project.get("optional-dependencies", {}).items()],
+    ]
+
     try:
         async with ClientSession(index_url) as session:
-            upgrades = []
-
-            if dependencies := project.get("dependencies"):
-                logger.info("[project.dependencies]:")
-                upgrades.append(
-                    upgrade_requirements(dependencies, session=session, **kwargs,
-                ))
-
-            if optional_dep := project.get("optional-dependencies"):
-                for k, dependencies in optional_dep.items():
-                    logger.info(f"[project.optional-dependencies.{k}]:")
-                    upgrades.append(
-                        upgrade_requirements(dependencies, session=session, **kwargs,
-                    ))
-
-            await gather(*upgrades)
+            await gather(
+                *[upgrade_requirements(dep, session=session, **kwargs) for dep in deps],
+                )
 
     except ValueError:
         logger.critical("Invalid index-url.")
