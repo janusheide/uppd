@@ -11,10 +11,9 @@ from packaging.requirements import SpecifierSet
 from packaging.specifiers import Specifier
 
 from uppd.uppd import (
-    find_latest_version, get_package_info, set_version, set_versions,
-    upgrade_requirements,
+    cli, find_latest_version, get_package_info, main, main_cli, set_version,
+    set_versions, upgrade_requirements,
 )
-from uppd.uppd import cli, main, main_cli
 
 
 async def test_get_package_info(index_url="https://pypi.org"):

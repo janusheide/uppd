@@ -15,6 +15,7 @@ import sys
 from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
+from asyncio import gather
 from importlib.metadata import version
 from io import TextIOWrapper
 from logging import basicConfig, getLevelName, getLogger
@@ -83,20 +84,14 @@ def set_versions(specifiers: SpecifierSet, **kwargs) -> SpecifierSet:
         ",".join([str(set_version(specifier=s, **kwargs)) for s in specifiers]))
 
 
-async def upgrade_requirement(
+async def fetch_requirement(
     requirement: Requirement,
     *,
-    session: ClientSession,
     match_operators: list[str],
+    session: ClientSession,
     **kwargs: bool,
 ) -> Requirement:
-    """Upgrade requirement."""
-    if not requirement.specifier or not _find_in(
-        match_operators, str(requirement.specifier),
-    ):
-        logger.debug(f"skipping {requirement} does not match {match_operators}.")
-        return requirement
-
+    """Fetch requirement."""
     updated = set_versions(
         requirement.specifier,
         version=find_latest_version(
@@ -112,28 +107,46 @@ async def upgrade_requirement(
     return requirement
 
 
-async def upgrade_requirements(
-    dependencies: list[str],
+async def upgrade_requirement(
+    requirement: Requirement,
     *,
+    match_operators: list[str],
     skip: list[str],
     dev: list[str],
     pre: list[str],
     post: list[str],
     **kwargs,
+) -> Requirement:
+    """Upgrade requirement."""
+    if requirement.name in skip:
+        return requirement
+
+    if not requirement.specifier or not _find_in(
+        match_operators, str(requirement.specifier),
+    ):
+        logger.debug(f"skipping {requirement} does not match {match_operators}.")
+        return requirement
+
+    return await fetch_requirement(
+        requirement,
+        dev="*" in dev or requirement.name in dev,
+        pre="*" in pre or requirement.name in pre,
+        post="*" in post or requirement.name in post,
+        match_operators=match_operators,
+        **kwargs,
+    )
+
+
+async def upgrade_requirements(
+    dependencies: list[str],
+    **kwargs,
 ) -> list[str]:
     """Upgrade requirements."""
-    for e, d in enumerate(dependencies):
-        requirement = Requirement(d)
-        if requirement.name in skip:
-            continue
+    deps = await gather(*[
+        (upgrade_requirement(Requirement(d), **kwargs)) for d in dependencies])
 
-        dependencies[e] = str(await upgrade_requirement(
-            requirement,
-            dev="*" in dev or requirement.name in dev,
-            pre="*" in pre or requirement.name in pre,
-            post="*" in post or requirement.name in post,
-            **kwargs,
-        ))
+    for (e, _), dep in zip(enumerate(dependencies), deps):
+        dependencies[e] = str(dep)
 
     return dependencies
 
