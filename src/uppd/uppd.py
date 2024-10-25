@@ -15,6 +15,7 @@ import sys
 from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
+from asyncio import gather
 from importlib.metadata import version
 from io import TextIOWrapper
 from logging import basicConfig, getLevelName, getLogger
@@ -83,20 +84,14 @@ def set_versions(specifiers: SpecifierSet, **kwargs) -> SpecifierSet:
         ",".join([str(set_version(specifier=s, **kwargs)) for s in specifiers]))
 
 
-async def upgrade_requirement(
+async def fetch_requirement(
     requirement: Requirement,
     *,
-    session: ClientSession,
     match_operators: list[str],
+    session: ClientSession,
     **kwargs: bool,
 ) -> Requirement:
-    """Upgrade requirement."""
-    if not requirement.specifier or not _find_in(
-        match_operators, str(requirement.specifier),
-    ):
-        logger.debug(f"skipping {requirement} does not match {match_operators}.")
-        return requirement
-
+    """Fetch requirement."""
     updated = set_versions(
         requirement.specifier,
         version=find_latest_version(
@@ -112,30 +107,45 @@ async def upgrade_requirement(
     return requirement
 
 
-async def upgrade_requirements(
-    dependencies: list[str],
+async def upgrade_requirement(
+    requirement: Requirement,
     *,
+    match_operators: list[str],
     skip: list[str],
     dev: list[str],
     pre: list[str],
     post: list[str],
     **kwargs,
-) -> list[str]:
+) -> Requirement:
+    """Upgrade requirement."""
+    if requirement.name in skip:
+        return requirement
+
+    if not requirement.specifier or not _find_in(
+        match_operators, str(requirement.specifier),
+    ):
+        logger.debug(f"skipping {requirement} does not match {match_operators}.")
+        return requirement
+
+    return await fetch_requirement(
+        requirement,
+        dev="*" in dev or requirement.name in dev,
+        pre="*" in pre or requirement.name in pre,
+        post="*" in post or requirement.name in post,
+        match_operators=match_operators,
+        **kwargs,
+    )
+
+
+async def upgrade_requirements(
+    dependencies: list[str],
+    **kwargs,
+) -> None:
     """Upgrade requirements."""
-    for e, d in enumerate(dependencies):
-        requirement = Requirement(d)
-        if requirement.name in skip:
-            continue
-
-        dependencies[e] = str(await upgrade_requirement(
-            requirement,
-            dev="*" in dev or requirement.name in dev,
-            pre="*" in pre or requirement.name in pre,
-            post="*" in post or requirement.name in post,
-            **kwargs,
-        ))
-
-    return dependencies
+    for e, dep in enumerate(await gather(
+        *[(upgrade_requirement(Requirement(d), **kwargs)) for d in dependencies],
+    )):
+        dependencies[e] = str(dep)
 
 
 def cli(args) -> Namespace:
@@ -234,20 +244,16 @@ async def main(
         logger.critical(f"No project section in input file: {infile}")
         exit(1)
 
+    deps = [
+        project.get("dependencies", []),
+        *[v for k,v in project.get("optional-dependencies", {}).items()],
+    ]
+
     try:
         async with ClientSession(index_url) as session:
-            if dependencies := project.get("dependencies"):
-                logger.info("[project.dependencies]:")
-                await upgrade_requirements(
-                    dependencies, session=session, **kwargs,
+            await gather(
+                *[upgrade_requirements(dep, session=session, **kwargs) for dep in deps],
                 )
-
-            if optional_dep := project.get("optional-dependencies"):
-                for k, dependencies in optional_dep.items():
-                    logger.info(f"[project.optional-dependencies.{k}]:")
-                    await upgrade_requirements(
-                        dependencies, session=session, **kwargs,
-                    )
 
     except ValueError:
         logger.critical("Invalid index-url.")
