@@ -88,20 +88,26 @@ async def fetch_requirement(
     *,
     match_operators: list[str],
     session: ClientSession,
-    **kwargs: bool,
+    dev: list[str],
+    pre: list[str],
+    post: list[str],
 ) -> Requirement:
     """Fetch requirement."""
-    updated = set_versions(
-        requirement.specifier,
-        version=find_latest_version(
-            await get_package_info(requirement.name, session), **kwargs,
-            ),
-        match_operators=match_operators,
-    )
+    if version := find_latest_version(
+        await get_package_info(requirement.name, session),
+        dev="*" in dev or requirement.name in dev,
+        pre="*" in pre or requirement.name in pre,
+        post="*" in post or requirement.name in post,
+    ):
+        updated = set_versions(
+            requirement.specifier,
+            version=version,
+            match_operators=match_operators,
+        )
 
-    if requirement.specifier != updated:
-        logger.info(f"{requirement} -> {requirement.name}{updated}")
-        requirement.specifier = updated
+        if requirement.specifier != updated:
+            logger.info(f"{requirement} -> {requirement.name}{updated}")
+            requirement.specifier = updated
 
     return requirement
 
@@ -111,9 +117,6 @@ async def upgrade_requirement(
     *,
     match_operators: list[str],
     skip: list[str],
-    dev: list[str],
-    pre: list[str],
-    post: list[str],
     **kwargs,
 ) -> Requirement:
     """Upgrade requirement."""
@@ -127,13 +130,7 @@ async def upgrade_requirement(
         return requirement
 
     return await fetch_requirement(
-        requirement,
-        dev="*" in dev or requirement.name in dev,
-        pre="*" in pre or requirement.name in pre,
-        post="*" in post or requirement.name in post,
-        match_operators=match_operators,
-        **kwargs,
-    )
+        requirement, match_operators=match_operators, **kwargs)
 
 
 async def upgrade_requirements(
