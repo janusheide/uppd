@@ -10,12 +10,11 @@ Look through pyproject.toml and update dependencies and optional dependencies.
 
 from __future__ import annotations
 
-import asyncio
 import sys
 from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
-from asyncio import gather
+from asyncio import gather, run
 from importlib.metadata import version
 from io import TextIOWrapper
 from logging import basicConfig, getLevelName, getLogger
@@ -268,7 +267,7 @@ async def main(
 
 def main_cli() -> None:
     """Main."""
-    asyncio.run(main(**vars(cli(sys.argv[1:]))))
+    run(main(**vars(cli(sys.argv[1:]))))
 
 
 if __name__ == "__main__":
