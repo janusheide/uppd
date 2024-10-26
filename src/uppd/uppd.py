@@ -246,14 +246,14 @@ async def main(
 
     deps = [
         project.get("dependencies", []),
-        *[v for k,v in project.get("optional-dependencies", {}).items()],
+        *project.get("optional-dependencies", {}).values(),
     ]
 
     try:
         async with ClientSession(index_url) as session:
-            await gather(
-                *[upgrade_requirements(dep, session=session, **kwargs) for dep in deps],
-                )
+            await gather(*[
+                upgrade_requirements(dep, session=session, **kwargs) for dep in deps
+                ])
 
     except ValueError:
         logger.critical("Invalid index-url.")
