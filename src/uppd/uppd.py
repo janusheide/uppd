@@ -244,9 +244,8 @@ async def main(
 
     try:
         async with ClientSession(index_url) as session:
-            await gather(*[
-                upgrade_requirements(dep, session=session, **kwargs) for dep in deps
-                ])
+            await gather(
+                *[upgrade_requirements(dep, session=session, **kwargs) for dep in deps])
 
     except ValueError:
         logger.critical("Invalid index-url.")
