@@ -3,8 +3,8 @@ News
 
 Lists of changes between versions.
 
-Latest
-------
+1.3.0
+-----
 * Minor: Upgrade versions concurrently.
 
 1.2.0
