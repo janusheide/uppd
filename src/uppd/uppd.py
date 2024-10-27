@@ -47,10 +47,7 @@ def find_latest_version(
     package: dict, *, dev: bool, pre: bool, post: bool,
 ) -> str | None:
     """Find latets version of package."""
-    versions = package["versions"]
-    versions.sort(key=Version, reverse=True)
-
-    for ver in versions:
+    for ver in reversed(package["versions"]):
         v = parse(ver)
 
         if not dev and v.is_devrelease:
