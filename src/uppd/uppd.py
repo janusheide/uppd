@@ -10,12 +10,11 @@ Look through pyproject.toml and update dependencies and optional dependencies.
 
 from __future__ import annotations
 
-import asyncio
 import sys
 from argparse import (
     ArgumentDefaultsHelpFormatter, ArgumentParser, FileType, Namespace,
 )
-from asyncio import gather
+from asyncio import gather, run
 from importlib.metadata import version
 from io import TextIOWrapper
 from logging import basicConfig, getLevelName, getLogger
@@ -48,10 +47,7 @@ def find_latest_version(
     package: dict, *, dev: bool, pre: bool, post: bool,
 ) -> str | None:
     """Find latets version of package."""
-    versions = package["versions"]
-    versions.sort(key=Version, reverse=True)
-
-    for ver in versions:
+    for ver in reversed(package["versions"]):
         v = parse(ver)
 
         if not dev and v.is_devrelease:
@@ -72,7 +68,7 @@ def set_version(
     specifier: Specifier, *, version: Version, match_operators: list[str],
 ) -> Specifier:
     """Set specifier version if operator matchecs."""
-    if _find_in(match_operators, specifier.operator):
+    if specifier.operator in match_operators:
         return Specifier(f"{specifier.operator}{version}")
 
     return specifier
@@ -89,20 +85,26 @@ async def fetch_requirement(
     *,
     match_operators: list[str],
     session: ClientSession,
-    **kwargs: bool,
+    dev: list[str],
+    pre: list[str],
+    post: list[str],
 ) -> Requirement:
     """Fetch requirement."""
-    updated = set_versions(
-        requirement.specifier,
-        version=find_latest_version(
-            await get_package_info(requirement.name, session), **kwargs,
-            ),
-        match_operators=match_operators,
-    )
+    if version := find_latest_version(
+        await get_package_info(requirement.name, session),
+        dev="*" in dev or requirement.name in dev,
+        pre="*" in pre or requirement.name in pre,
+        post="*" in post or requirement.name in post,
+    ):
+        updated = set_versions(
+            requirement.specifier,
+            version=version,
+            match_operators=match_operators,
+        )
 
-    if requirement.specifier != updated:
-        logger.info(f"{requirement} -> {requirement.name}{updated}")
-        requirement.specifier = updated
+        if requirement.specifier != updated:
+            logger.info(f"{requirement} -> {requirement.name}{updated}")
+            requirement.specifier = updated
 
     return requirement
 
@@ -112,9 +114,6 @@ async def upgrade_requirement(
     *,
     match_operators: list[str],
     skip: list[str],
-    dev: list[str],
-    pre: list[str],
-    post: list[str],
     **kwargs,
 ) -> Requirement:
     """Upgrade requirement."""
@@ -128,13 +127,7 @@ async def upgrade_requirement(
         return requirement
 
     return await fetch_requirement(
-        requirement,
-        dev="*" in dev or requirement.name in dev,
-        pre="*" in pre or requirement.name in pre,
-        post="*" in post or requirement.name in post,
-        match_operators=match_operators,
-        **kwargs,
-    )
+        requirement, match_operators=match_operators, **kwargs)
 
 
 async def upgrade_requirements(
@@ -246,14 +239,13 @@ async def main(
 
     deps = [
         project.get("dependencies", []),
-        *[v for k,v in project.get("optional-dependencies", {}).items()],
+        *project.get("optional-dependencies", {}).values(),
     ]
 
     try:
         async with ClientSession(index_url) as session:
             await gather(
-                *[upgrade_requirements(dep, session=session, **kwargs) for dep in deps],
-                )
+                *[upgrade_requirements(dep, session=session, **kwargs) for dep in deps])
 
     except ValueError:
         logger.critical("Invalid index-url.")
@@ -268,7 +260,7 @@ async def main(
 
 def main_cli() -> None:
     """Main."""
-    asyncio.run(main(**vars(cli(sys.argv[1:]))))
+    run(main(**vars(cli(sys.argv[1:]))))
 
 
 if __name__ == "__main__":
