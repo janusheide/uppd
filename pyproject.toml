@@ -49,7 +49,7 @@ test = [
 ]
 dev = [
     "uppd[test]",
-    "brundle==1.1.0",
+    "brundle==1.2.0",
     "isort==5.13.2",
     "licensecheck==2024.3",
     "mypy==1.13.0",
