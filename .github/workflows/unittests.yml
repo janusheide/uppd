@@ -36,7 +36,7 @@ jobs:
       run: pytest
 
     - name: Find old dependencies
-      run: dlister -o requirements.old
+      run: dlister test -o requirements.old
 
     - name: Install old dependencies
       run: pip install -r requirements.old
