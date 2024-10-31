@@ -3,6 +3,10 @@ News
 
 Lists of changes between versions.
 
+Latest
+------
+* Patch: Correct aiohttp requirement
+
 1.3.0
 -----
 * Minor: Upgrade versions concurrently.
