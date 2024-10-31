@@ -30,13 +30,22 @@ jobs:
         allow-prereleases: true
 
     - name: Setup environment
-      run: pip install -e .[test]
+      run: pip install .[test]
 
     - name: Run unit tests
       run: pytest
 
+    - name: Find old dependencies
+      run: dlister -o requirements.old
+
+    - name: Install old dependencies
+      run: pip install -r requirements.old
+
+    - name: Run unit tests with old dependencies
+      run: pytest
+
     - name: Setup environment
-      run: pip install -e .[dev]
+      run: pip install .[dev]
 
     - name: Run linters
       run: brundle
