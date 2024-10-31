@@ -3,9 +3,9 @@ News
 
 Lists of changes between versions.
 
-Latest
-------
-* Patch: Correct aiohttp requirement
+1.3.1
+-----
+* Patch: Correct aiohttp requirement.
 
 1.3.0
 -----
