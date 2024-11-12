@@ -85,10 +85,10 @@ def test_find_latest_version():
 async def test_find_latest_version_sampleproject(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
         sp = await get_package_info("sampleproject", session=session)
-        assert find_latest_version(sp, dev=False, pre=False, post=False) == "3.0.0"
-        assert find_latest_version(sp, dev=True, pre=False, post=False) == "3.0.0"
-        assert find_latest_version(sp, dev=False, pre=True, post=False) == "3.0.0"
-        assert find_latest_version(sp, dev=False, pre=False, post=True) == "3.0.0"
+        assert find_latest_version(sp, dev=False, pre=False, post=False) == "4.0.0"
+        assert find_latest_version(sp, dev=True, pre=False, post=False) == "4.0.0"
+        assert find_latest_version(sp, dev=False, pre=True, post=False) == "4.0.0"
+        assert find_latest_version(sp, dev=False, pre=False, post=True) == "4.0.0"
 
 
 async def test_upgrade_requirements(index_url="https://pypi.org"):
