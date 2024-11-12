@@ -3,6 +3,10 @@ News
 
 Lists of changes between versions.
 
+Latest
+------
+* Minor: Creating SpecifierSet directly from specifiers using latest packaging version.
+
 1.3.1
 -----
 * Patch: Correct aiohttp requirement.

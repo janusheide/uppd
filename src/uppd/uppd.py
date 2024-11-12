@@ -76,8 +76,7 @@ def set_version(
 
 def set_versions(specifiers: SpecifierSet, **kwargs) -> SpecifierSet:
     """Set all versions for all specifiers that matches operatoers."""
-    return SpecifierSet(
-        ",".join([str(set_version(specifier=s, **kwargs)) for s in specifiers]))
+    return SpecifierSet([set_version(specifier=s, **kwargs) for s in specifiers])
 
 
 async def fetch_requirement(
