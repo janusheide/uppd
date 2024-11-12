@@ -3,8 +3,8 @@ News
 
 Lists of changes between versions.
 
-Latest
-------
+1.4.0
+-----
 * Minor: Creating SpecifierSet directly from specifiers using latest packaging version.
 
 1.3.1
