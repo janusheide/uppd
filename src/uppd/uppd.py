@@ -229,11 +229,15 @@ async def main(
         data = load(infile)
     except ParseError:
         logger.critical(f"Error parsing input toml file: {infile}")
+        outfile.close()
         exit(1)
+    finally:
+        infile.close()
 
     project = data.get("project")
     if project is None:
         logger.critical(f"No project section in input file: {infile}")
+        outfile.close()
         exit(1)
 
     deps = [
@@ -248,13 +252,16 @@ async def main(
 
     except ValueError:
         logger.critical("Invalid index-url.")
+        outfile.close()
         exit(1)
 
     if dry_run:
+        outfile.close()
         return
 
     outfile.seek(0)
     dump(data, outfile)
+    outfile.close()
 
 
 def main_cli() -> None:
