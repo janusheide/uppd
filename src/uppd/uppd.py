@@ -264,5 +264,10 @@ async def main(
     outfile.close()
 
 
-if __name__ == "__main__":
+def main_cli() -> None:
+    """Main."""
     run(main(**vars(cli(sys.argv[1:]))))
+
+
+if __name__ == "__main__":
+    main_cli()
