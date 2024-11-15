@@ -90,7 +90,14 @@ exclude = ["build"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "module"
 addopts = "--cov=uppd"
-filterwarnings = ["error"]
+filterwarnings = [
+    "error",
+    # Should no longer be necessary with aiohttp 4
+    # see https://github.com/aio-libs/aiohttp/issues/1925
+    "ignore::ResourceWarning",
+    # Windows does not manage to keep the event loop open
+    "ignore::pytest.PytestUnraisableExceptionWarning",
+    ]
 
 [tool.ruff.lint]
 select = ["ALL"]
