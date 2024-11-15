@@ -16,11 +16,6 @@ from uppd.uppd import (
 )
 
 
-async def test_get_package_info(index_url="https://pypi.org"):
-    async with ClientSession(index_url) as session:
-        assert await get_package_info("sampleproject", session=session)
-
-
 def test_set_version():
     assert set_version(Specifier("==0"), version="1", match_operators=["=="]) == "==1"
 
@@ -80,6 +75,13 @@ def test_find_latest_version():
     assert find_latest_version(p, dev=True, pre=False, post=False) == "0.0.12"
     assert find_latest_version(p, dev=False, pre=True, post=False) == "0.0.12"
     assert find_latest_version(p, dev=False, pre=False, post=True) == "0.0.12"
+
+
+# TODO Should no longer be necessary with aiohttp 4
+# see https://github.com/aio-libs/aiohttp/issues/1925
+async def test_get_package_info(index_url="https://pypi.org"):
+    async with ClientSession(index_url) as session:
+        assert await get_package_info("sampleproject", session=session)
 
 
 # TODO Should no longer be necessary with aiohttp 4
@@ -201,6 +203,8 @@ def test_cli():
     assert a["pre"] == ["foo"]
 
 
+# TODO Should no longer be necessary with aiohttp 4
+# see https://github.com/aio-libs/aiohttp/issues/1925
 def test_main_cli():
     assert main_cli() is None
 
