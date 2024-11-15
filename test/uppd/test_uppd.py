@@ -96,6 +96,8 @@ async def test_find_latest_version_sampleproject(index_url="https://pypi.org"):
         assert find_latest_version(sp, dev=False, pre=False, post=True) == "4.0.0"
 
 
+# TODO Should no longer be necessary with aiohttp 4
+# see https://github.com/aio-libs/aiohttp/issues/1925
 async def test_upgrade_requirements(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
 
