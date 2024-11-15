@@ -208,6 +208,7 @@ def test_cli():
 
 # Should no longer be necessary with aiohttp 4
 # see https://github.com/aio-libs/aiohttp/issues/1925
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_main_cli():
     assert main_cli() is None
 
