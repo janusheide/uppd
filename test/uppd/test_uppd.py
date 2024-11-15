@@ -77,16 +77,16 @@ def test_find_latest_version():
     assert find_latest_version(p, dev=False, pre=False, post=True) == "0.0.12"
 
 
-# TODO Should no longer be necessary with aiohttp 4
+# Should no longer be necessary with aiohttp 4
 # see https://github.com/aio-libs/aiohttp/issues/1925
 async def test_get_package_info(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
         assert await get_package_info("sampleproject", session=session)
 
 
-# TODO Should no longer be necessary with aiohttp 4
+# Should no longer be necessary with aiohttp 4
 # see https://github.com/aio-libs/aiohttp/issues/1925
-@pytest.mark.filterwarnings('ignore::ResourceWarning')
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 async def test_find_latest_version_sampleproject(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
         sp = await get_package_info("sampleproject", session=session)
@@ -96,9 +96,9 @@ async def test_find_latest_version_sampleproject(index_url="https://pypi.org"):
         assert find_latest_version(sp, dev=False, pre=False, post=True) == "4.0.0"
 
 
-# TODO Should no longer be necessary with aiohttp 4
+# Should no longer be necessary with aiohttp 4
 # see https://github.com/aio-libs/aiohttp/issues/1925
-@pytest.mark.filterwarnings('ignore::ResourceWarning')
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 async def test_upgrade_requirements(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
 
@@ -175,9 +175,9 @@ async def test_upgrade_requirements(index_url="https://pypi.org"):
         assert dep != ["sampleproject==2.0.0"]
 
 
-# TODO Should no longer be necessary with aiohttp 4
+# Should no longer be necessary with aiohttp 4
 # see https://github.com/aio-libs/aiohttp/issues/1925
-@pytest.mark.filterwarnings('ignore::ResourceWarning')
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 def test_cli():
 
     with pytest.raises(SystemExit):
@@ -206,9 +206,9 @@ def test_cli():
     assert a["pre"] == ["foo"]
 
 
-# TODO Should no longer be necessary with aiohttp 4
+# Should no longer be necessary with aiohttp 4
 # see https://github.com/aio-libs/aiohttp/issues/1925
-@pytest.mark.filterwarnings('ignore::ResourceWarning')
+@pytest.mark.filterwarnings("ignore::ResourceWarning")
 async def test_main(tmp_path):
     arguments = vars(cli(sys.argv[1:]))
     await main(**arguments)

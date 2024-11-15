@@ -155,7 +155,6 @@ def cli(args) -> Namespace:
 
     infile = parser.parse_args(["-i", "pyproject.toml"]).infile
     uppd_settings = load(infile).get("tool", {}).get("uppd", {})
-    # infile.close()
 
     parser.add_argument(
         "-o", "--outfile",
