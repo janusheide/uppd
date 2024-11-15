@@ -59,7 +59,7 @@ dev = [
     "licensecheck==2024.3",
     "mypy==1.13.0",
     "ruff==0.7.4",
-    "bouillon==2.7.0",
+    "bouillon==2.8.0",
     "build==1.2.2.post1",
     "twine==5.1.1",
 ]
