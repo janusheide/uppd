@@ -11,7 +11,7 @@ from packaging.requirements import SpecifierSet
 from packaging.specifiers import Specifier
 
 from uppd.uppd import (
-    cli, find_latest_version, get_package_info, main, main_cli, set_version,
+    cli, find_latest_version, get_package_info, main, set_version,
     set_versions, upgrade_requirements,
 )
 
@@ -201,12 +201,6 @@ def test_cli():
 
     a = vars(cli(["--pre", "foo"]))
     assert a["pre"] == ["foo"]
-
-
-# TODO Should no longer be necessary with aiohttp 4
-# see https://github.com/aio-libs/aiohttp/issues/1925
-def test_main_cli():
-    assert main_cli() is None
 
 
 # TODO Should no longer be necessary with aiohttp 4
