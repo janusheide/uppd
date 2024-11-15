@@ -3,6 +3,11 @@ News
 
 Lists of changes between versions.
 
+Latest
+------
+* Minor: Simpler dependency managment.
+* Minor: Closing infile before exit.
+
 1.4.0
 -----
 * Minor: Creating SpecifierSet directly from specifiers using latest packaging version.

@@ -39,9 +39,9 @@ classifiers = [
 requires-python = ">=3.8"
 
 dependencies = [
-    "tomlkit<=0.13.2,>=0.10.0",
-    "aiohttp<=3.11.2,>=3.9.0",
-    "packaging<=24.2,>=24.2",
+    "tomlkit>=0.10.0",
+    "aiohttp>=3.9.0",
+    "packaging>=24.2",
 ]
 
 [project.optional-dependencies]
@@ -58,7 +58,7 @@ dev = [
     "isort==5.13.2",
     "licensecheck==2024.3",
     "mypy==1.13.0",
-    "ruff==0.7.3",
+    "ruff==0.7.4",
     "bouillon==2.7.0",
     "build==1.2.2.post1",
     "twine==5.1.1",
@@ -90,6 +90,7 @@ exclude = ["build"]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "module"
 addopts = "--cov=uppd"
+filterwarnings = ["error"]
 
 [tool.ruff.lint]
 select = ["ALL"]
