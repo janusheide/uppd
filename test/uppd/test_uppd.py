@@ -98,6 +98,7 @@ async def test_find_latest_version_sampleproject(index_url="https://pypi.org"):
 
 # TODO Should no longer be necessary with aiohttp 4
 # see https://github.com/aio-libs/aiohttp/issues/1925
+@pytest.mark.filterwarnings('ignore::ResourceWarning')
 async def test_upgrade_requirements(index_url="https://pypi.org"):
     async with ClientSession(index_url) as session:
 
