@@ -16,7 +16,11 @@ Update Python Project Dependencies (UPPD)
 .. image:: https://img.shields.io/librariesio/github/janusheide/uppd
    :alt: Libraries.io dependency status for GitHub repo
 
-Update dependencies and optional dependencies in pyproject.toml files.
+Update dependencies and optional dependencies in ``pyproject.toml`` files based on
+defined match operators.
+
+This project aims to enable a similar workflow as pur_ does for ``requirements.txt`` files.
+
 
 Getting Started
 ---------------
@@ -24,6 +28,26 @@ Getting Started
 Install and run::
 
     pip install uppd
+    uppd
+    INFO: dlister==1.1.0 -> dlister==1.2.0
+    INFO: pytest-aiohttp==1.0.0 -> pytest-aiohttp==1.0.5
+    INFO: pytest==8.0.0 -> pytest==8.3.3
+
+Set inputs and output files::
+
+    uppd -i dev/pyproject.toml
+    uppd -i pyproject.toml -o pyproject.toml.updated
+
+Skip dependencies::
+
+    uppd --skip foo bar
+
+Allow upgrade to pre releases::
+
+    uppd --pre foo bar
+
+Print help::
+
     uppd --help
 
     usage: uppd [-h]
@@ -63,24 +87,7 @@ Install and run::
     -v, --version         show program's version number and exit
 
 
-Usage
------
-
-Set inputs and output files::
-
-    uppd -i dev/pyproject.toml
-    uppd -i pyproject.toml -o pyproject.toml.updated
-
-Skip dependencies::
-
-    uppd --skip foo bar
-
-Allow upgrade to pre releases::
-
-    uppd --pre foo bar
-
-
-The following settings (with defaults) can be overwritten in the ``infile``::
+The following settings (with defaults) can be set/overwritten in the ``infile``::
 
     [tool.uppd]
     match_operators = ["==", "<=", "~="]
