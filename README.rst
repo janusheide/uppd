@@ -111,6 +111,6 @@ Setup, run tests and release::
 Credits
 -------
 
-This project aims to enable a similar workflow as pur_ for requirements.txt files
+This project aims to enable a similar workflow as pur_ for requirements.txt files, and essentially exists because pur_ (at the time of writing) does not support upgrading dependencies in ``pyproject.toml`` files.
 
 .. _pur: https://github.com/alanhamlett/pip-update-requirements
