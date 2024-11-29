@@ -3,6 +3,10 @@ News
 
 Lists of changes between versions.
 
+1.6.0
+-----
+* Minor: Various maintaince improvements.
+
 1.5.0
 ------
 * Minor: Simpler dependency managment.
