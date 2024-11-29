@@ -58,7 +58,7 @@ dev = [
     "isort==5.13.2",
     "licensecheck==2024.3",
     "mypy==1.13.0",
-    "ruff==0.7.4",
+    "ruff==0.8.1",
     "bouillon==2.8.0",
     "build==1.2.2.post1",
     "twine==5.1.1",
@@ -102,7 +102,7 @@ filterwarnings = [
 [tool.ruff.lint]
 select = ["ALL"]
 # as of 01/2024 ruff does not support isort configuration, so we disable I001
-ignore = ["ANN001", "ANN003", "ANN101", "ASYNC230", "I001", "D107", "D203", "D213", "D401", "FIX", "INP", "G004", "PLR", "SIM105", "TD002", "TD003", "TCH001", "TCH002", "TCH003"]
+ignore = ["ANN001", "ANN003", "D203", "D213", "D401", "G004", "I001", "INP001", "PLR0913", "SIM105", "TC003"]
 
 [tool.ruff.lint.per-file-ignores]
 "test/**/*.py" = ["ANN", "ARG", "ASYNC", "D", "ERA", "S101", "S105", "S106"]
