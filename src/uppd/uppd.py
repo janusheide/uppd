@@ -230,7 +230,7 @@ async def main(
     except ParseError:
         logger.critical(f"Error parsing input toml file: {infile}")
         outfile.close()
-        exit(1)
+        sys.exit(1)
     finally:
         infile.close()
 
@@ -238,7 +238,7 @@ async def main(
     if project is None:
         logger.critical(f"No project section in input file: {infile}")
         outfile.close()
-        exit(1)
+        sys.exit(1)
 
     deps = [
         project.get("dependencies", []),
@@ -253,7 +253,7 @@ async def main(
     except ValueError:
         logger.critical("Invalid index-url.")
         outfile.close()
-        exit(1)
+        sys.exit(1)
 
     if dry_run:
         outfile.close()
