@@ -3,6 +3,10 @@ News
 
 Lists of changes between versions.
 
+Latest
+------
+* Major: Drop python 3.8 support.
+
 1.6.0
 -----
 * Minor: Various maintaince improvements.
