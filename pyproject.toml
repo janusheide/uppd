@@ -46,17 +46,17 @@ dependencies = [
 [project.optional-dependencies]
 test = [
     "dlister==1.3.0",
-    "pytest==8.3.4",
-    "pytest-asyncio<=0.25.3,>=0.24.0",
-    "pytest-cov<=6.0.0,>=5.0.0",
+    "pytest==8.3.5",
+    "pytest-asyncio<=0.26.0,>=0.24.0",
+    "pytest-cov<=6.1.0,>=5.0.0",
 ]
 dev = [
     "uppd[test]",
     "brundle==1.3.0",
-    "isort==6.0.0",
-    "licensecheck==2024.3",
-    "mypy==1.14.1",
-    "ruff==0.9.4",
+    "isort==6.0.1",
+    "licensecheck==2025.1.0",
+    "mypy==1.15.0",
+    "ruff==0.11.3",
     "bouillon==2.9.0",
     "build==1.2.2.post1",
     "twine==6.1.0",
