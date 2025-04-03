@@ -245,6 +245,14 @@ async def main(
         *project.get("optional-dependencies", {}).values(),
     ]
 
+    # hatch allows for several envs that can all have dependencies
+    # they are all stores in [tool.hatch.envs.<ENV_NAME>] sections
+    # see https://hatch.pypa.io/1.9/config/environment/overview/ for more information
+    for env in data.get("tool", {}).get("hatch", {}).get("envs", {}).values():
+        for key in ("dependencies", "extra-dependencies"):
+            if key in env:
+                deps.append(env[key])
+
     try:
         async with ClientSession(index_url) as session:
             await gather(
